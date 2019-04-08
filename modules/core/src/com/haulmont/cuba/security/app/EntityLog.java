@@ -758,6 +758,9 @@ public class EntityLog implements EntityLogAPI {
         PersistenceTools persistenceTools = persistence.getTools();
         String fieldName = null;
         switch (categoryAttribute.getDataType()) {
+            case DATE_WITHOUT_TIME:
+                fieldName = "dateWithoutTimeValue";
+                break;
             case DATE:
                 fieldName = "dateValue";
                 break;
@@ -815,6 +818,7 @@ public class EntityLog implements EntityLogAPI {
         String fieldName = null;
         switch (categoryAttribute.getDataType()) {
             case DATE:
+            case DATE_WITHOUT_TIME:
                 fieldName = "dateValue";
                 break;
             case ENUMERATION:
