@@ -8,6 +8,8 @@ package com.haulmont.cuba.gui.components.validators.constrainsts;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.validators.constrainsts.numbers.NumberConstraint;
 
+import static com.haulmont.cuba.gui.components.validators.constrainsts.ConstraintsHelper.getNumberConstraint;
+
 public class MaxValidator<T extends Number> extends AbstractValidator<T> {
 
     protected long max = Long.MAX_VALUE;

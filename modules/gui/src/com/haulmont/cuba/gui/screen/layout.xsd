@@ -1144,24 +1144,36 @@
         <xs:attribute name="useUserTimezone" type="xs:boolean"/>
     </xs:complexType>
 
-    <xs:complexType name="constraintsType">
+    <xs:complexType name="baseValidatorsType">
         <xs:all>
-            <xs:element name="notEmpty" minOccurs="0" maxOccurs="1" type="constraintType"/>
-            <xs:element name="notBlank" minOccurs="0" maxOccurs="1" type="constraintType"/>
-            <xs:element name="regexp" minOccurs="0" maxOccurs="1" type="regexpConstraintType"/>
-            <xs:element name="size" minOccurs="0" maxOccurs="1" type="sizeConstraintType"/>
             <xs:element name="mustBeNull" minOccurs="0" maxOccurs="1" type="constraintType"/>
             <xs:element name="mustBeNotNull" minOccurs="0" maxOccurs="1" type="constraintType"/>
-            <xs:element name="negativeOrZero" minOccurs="0" maxOccurs="1" type="constraintType"/>
-            <xs:element name="negative" minOccurs="0" maxOccurs="1" type="constraintType"/>
-            <xs:element name="positiveOrZero" minOccurs="0" maxOccurs="1" type="constraintType"/>
-            <xs:element name="positive" minOccurs="0" maxOccurs="1" type="constraintType"/>
-            <xs:element name="max" minOccurs="0" maxOccurs="1" type="maxMinConstraintType"/>
-            <xs:element name="min" minOccurs="0" maxOccurs="1" type="maxMinConstraintType"/>
-            <xs:element name="decimalMin" minOccurs="0" maxOccurs="1" type="decimalMaxMinConstraintType"/>
-            <xs:element name="decimalMax" minOccurs="0" maxOccurs="1" type="decimalMaxMinConstraintType"/>
-            <xs:element name="digits" minOccurs="0" maxOccurs="1" type="digitsConstraintType"/>
         </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="constraintsType">
+        <xs:complexContent>
+            <xs:extension base="baseValidatorsType">
+                <xs:all>
+                    <xs:element name="notEmpty" minOccurs="0" maxOccurs="1" type="constraintType"/>
+                    <xs:element name="notBlank" minOccurs="0" maxOccurs="1" type="constraintType"/>
+                    <xs:element name="regexp" minOccurs="0" maxOccurs="1" type="regexpConstraintType"/>
+                    <xs:element name="size" minOccurs="0" maxOccurs="1" type="sizeConstraintType"/>
+                    <xs:element name="digits" minOccurs="0" maxOccurs="1" type="digitsConstraintType"/>
+                    <xs:element name="decimalMin" minOccurs="0" maxOccurs="1" type="decimalMaxMinConstraintType"/>
+                    <xs:element name="decimalMax" minOccurs="0" maxOccurs="1" type="decimalMaxMinConstraintType"/>
+                    <xs:element name="negativeOrZero" minOccurs="0" maxOccurs="1" type="constraintType"/>
+                    <xs:element name="negative" minOccurs="0" maxOccurs="1" type="constraintType"/>
+                    <xs:element name="positiveOrZero" minOccurs="0" maxOccurs="1" type="constraintType"/>
+                    <xs:element name="positive" minOccurs="0" maxOccurs="1" type="constraintType"/>
+                    <xs:element name="max" minOccurs="0" maxOccurs="1" type="maxMinConstraintType"/>
+                    <xs:element name="min" minOccurs="0" maxOccurs="1" type="maxMinConstraintType"/>
+                    <xs:element name="decimalMin" minOccurs="0" maxOccurs="1" type="decimalMaxMinConstraintType"/>
+                    <xs:element name="decimalMax" minOccurs="0" maxOccurs="1" type="decimalMaxMinConstraintType"/>
+                    <xs:element name="digits" minOccurs="0" maxOccurs="1" type="digitsConstraintType"/>
+                </xs:all>
+            </xs:extension>
+        </xs:complexContent>
     </xs:complexType>
 
     <xs:complexType name="constraintType">
@@ -1726,6 +1738,7 @@
             <xs:extension base="baseFieldComponent">
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" type="validatorType"/>
+                    <xs:element name="constraints" minOccurs="0" type="constraintsType"/>
                 </xs:sequence>
 
                 <xs:attributeGroup ref="hasBuffered"/>
@@ -1756,6 +1769,7 @@
             <xs:extension base="baseComponent">
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" type="validatorType"/>
+                    <xs:element name="constraints" minOccurs="0" type="constraintsType"/>
                 </xs:sequence>
 
                 <xs:attributeGroup ref="hasBuffered"/>
@@ -1823,6 +1837,7 @@
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" type="validatorType"/>
                     <xs:element name="actions" minOccurs="0" type="componentActions"/>
+                    <xs:element name="constraints" minOccurs="0" type="constraintsType"/>
                 </xs:sequence>
 
                 <xs:attribute name="metaClass" type="xs:string"/>
@@ -1838,6 +1853,7 @@
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" type="validatorType"/>
                     <xs:element name="actions" minOccurs="0" type="componentActions"/>
+                    <xs:element name="constraints" minOccurs="0" type="baseValidatorsType"/>
                 </xs:sequence>
 
                 <xs:attributeGroup ref="hasBuffered"/>
@@ -1857,6 +1873,7 @@
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" type="validatorType"/>
                     <xs:element name="actions" minOccurs="0" type="componentActions"/>
+                    <xs:element name="constraints" minOccurs="0" type="baseValidatorsType"/>
                 </xs:sequence>
 
                 <xs:attribute name="stylename" type="lookupPickerFieldStylename"/>
@@ -1884,6 +1901,7 @@
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" type="validatorType"/>
                     <xs:element name="actions" minOccurs="0" type="componentActions"/>
+                    <xs:element name="constraints" minOccurs="0" type="baseValidatorsType"/>
                 </xs:sequence>
 
                 <xs:attributeGroup ref="hasBuffered"/>
@@ -1912,6 +1930,7 @@
             <xs:extension base="baseFieldComponent">
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" type="validatorType"/>
+
                 </xs:sequence>
 
                 <xs:attributeGroup ref="hasCaptionSource"/>

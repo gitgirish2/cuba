@@ -10,6 +10,8 @@ import com.haulmont.cuba.gui.components.validators.constrainsts.numbers.NumberCo
 
 import java.math.BigDecimal;
 
+import static com.haulmont.cuba.gui.components.validators.constrainsts.ConstraintsHelper.getNumberConstraint;
+
 public class DecimalMinValidator<T> extends AbstractValidator<T> {
 
     protected BigDecimal min = new BigDecimal(Long.MIN_VALUE);
@@ -48,7 +50,7 @@ public class DecimalMinValidator<T> extends AbstractValidator<T> {
     }
 
     @Override
-    public void accept(T value) {
+    public void accept(T value) throws ValidationException {
         // consider null value is valid
         if (value == null) {
             return;

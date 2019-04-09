@@ -8,6 +8,8 @@ package com.haulmont.cuba.gui.components.validators.constrainsts;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.validators.constrainsts.numbers.NumberConstraint;
 
+import static com.haulmont.cuba.gui.components.validators.constrainsts.ConstraintsHelper.getNumberConstraint;
+
 public class PositiveOrZeroValidator<T extends Number> extends AbstractValidator<T> {
 
     public PositiveOrZeroValidator() {
