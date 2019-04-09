@@ -63,7 +63,7 @@ public class UrlChangeHandler implements InitializingBean {
     @Inject
     protected WindowConfig windowConfig;
     @Inject
-    protected List<NavigationFilter> accessFilters;
+    protected List<NavigationFilter> navigationFilters;
     @Inject
     protected BeanLocator beanLocator;
 
@@ -78,7 +78,7 @@ public class UrlChangeHandler implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        historyNavigator = new HistoryNavigator(this, ui);
+        historyNavigator = new HistoryNavigator(ui, this);
         screenNavigator = beanLocator.getPrototype(ScreenNavigator.NAME, this, ui);
     }
 
@@ -233,12 +233,15 @@ public class UrlChangeHandler implements InitializingBean {
     }
 
     public AccessCheckResult navigationAllowed(NavigationState requestedState) {
-        for (NavigationFilter filter : accessFilters) {
-            AccessCheckResult result = filter.allowed(ui.getHistory().getNow(), requestedState);
-            if (result.isRejected()) {
-                return result;
+        NavigationState currentState = ui.getHistory().getNow();
+
+        for (NavigationFilter filter : navigationFilters) {
+            AccessCheckResult accessCheckResult = filter.allowed(currentState, requestedState);
+            if (accessCheckResult.isRejected()) {
+                return accessCheckResult;
             }
         }
+
         return AccessCheckResult.allowed();
     }
 
@@ -247,7 +250,6 @@ public class UrlChangeHandler implements InitializingBean {
     }
 
     // Copied from WebAppWorkArea
-
     protected boolean closeWindowStack(Screens.WindowStack windowStack) {
         boolean closed = true;
 
@@ -273,6 +275,7 @@ public class UrlChangeHandler implements InitializingBean {
         return closed;
     }
 
+    // Copied from WebAppWorkArea
     public boolean isNotCloseable(Window window) {
         if (!window.isCloseable()) {
             return true;
@@ -295,6 +298,7 @@ public class UrlChangeHandler implements InitializingBean {
         return windowIsDefault;
     }
 
+    // Copied from WebAppWorkArea
     protected boolean isWindowClosePrevented(Window window) {
         Window.BeforeCloseEvent event = new Window.BeforeCloseEvent(window, CloseOriginType.CLOSE_BUTTON);
 

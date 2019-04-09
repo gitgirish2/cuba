@@ -37,7 +37,9 @@ public abstract class AbstractNavigationHandler implements NavigationHandler {
 
     protected void revertNavigationState(AppUI ui) {
         UrlChangeHandler urlChangeHandler = ui.getUrlChangeHandler();
-        Screen screen = urlChangeHandler.findActiveScreenByState(ui.getHistory().getNow());
+        NavigationState currentState = ui.getHistory().getNow();
+
+        Screen screen = urlChangeHandler.findActiveScreenByState(currentState);
         if (screen == null) {
             screen = urlChangeHandler.getActiveScreen();
         }
@@ -46,24 +48,28 @@ public abstract class AbstractNavigationHandler implements NavigationHandler {
     }
 
     protected boolean isRootRoute(WindowInfo windowInfo) {
-        return windowInfo != null && windowInfo.getRouteDefinition().isRoot();
+        return windowInfo != null
+                && windowInfo.getRouteDefinition().isRoot();
     }
 
     protected boolean isNotPermittedToNavigate(NavigationState requestedState, WindowInfo windowInfo,
                                                Security security, AppUI ui) {
+
         boolean screenPermitted = security.isScreenPermitted(windowInfo.getId());
         if (!screenPermitted) {
             revertNavigationState(ui);
+
             throw new AccessDeniedException(PermissionType.SCREEN, windowInfo.getId());
         }
 
         UrlChangeHandler urlChangeHandler = ui.getUrlChangeHandler();
 
-        NavigationFilter.AccessCheckResult result = urlChangeHandler.navigationAllowed(requestedState);
-        if (result.isRejected()) {
-            if (StringUtils.isNotEmpty(result.getMessage())) {
-                urlChangeHandler.showNotification(result.getMessage());
+        NavigationFilter.AccessCheckResult navigationAllowed = urlChangeHandler.navigationAllowed(requestedState);
+        if (navigationAllowed.isRejected()) {
+            if (StringUtils.isNotEmpty(navigationAllowed.getMessage())) {
+                urlChangeHandler.showNotification(navigationAllowed.getMessage());
             }
+
             revertNavigationState(ui);
 
             return true;

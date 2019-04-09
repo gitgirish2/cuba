@@ -32,10 +32,13 @@ import static com.haulmont.cuba.web.sys.navigation.UrlTools.replaceState;
 
 public class HistoryNavigator {
 
+    protected final AppUI ui;
+
     protected final UrlChangeHandler urlChangeHandler;
     protected final History history;
 
-    public HistoryNavigator(UrlChangeHandler urlChangeHandler, AppUI ui) {
+    public HistoryNavigator(AppUI ui, UrlChangeHandler urlChangeHandler) {
+        this.ui = ui;
         this.urlChangeHandler = urlChangeHandler;
         this.history = ui.getHistory();
     }
@@ -69,6 +72,8 @@ public class HistoryNavigator {
         }
 
         if (urlChangeHandler.isRootState(requestedState)) {
+            // TODO: re-check
+            // TODO: get rid of navigation - close screens here
             WindowInfo rootWindowInfo = urlChangeHandler.windowConfig.findWindowInfoByRoute(requestedState.getRoot());
             if (rootWindowInfo != null) {
                 Class<? extends FrameOwner> clazz = rootWindowInfo.getControllerClass();
@@ -122,6 +127,7 @@ public class HistoryNavigator {
             return requestedState;
         }
 
+        // TODO: while ???
         if (Objects.equals(requestedState, history.getNow())) {
             requestedState = history.getPrevious();
         }

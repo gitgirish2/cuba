@@ -18,18 +18,19 @@ package com.haulmont.cuba.web;
 
 import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.loginwindow.AppLoginWindow;
+import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.security.AnonymousUserCredentials;
 import com.haulmont.cuba.web.security.events.AppLoggedInEvent;
 import com.haulmont.cuba.web.security.events.AppLoggedOutEvent;
 import com.haulmont.cuba.web.security.events.AppStartedEvent;
 import com.haulmont.cuba.web.sys.VaadinSessionScope;
 import com.vaadin.server.*;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,17 +144,22 @@ public class DefaultApp extends App {
                 .stream()
                 .filter(ui -> ui.hasAuthenticatedSession()
                         && !Objects.equals(ui.getCurrentSession(), userSession))
-                .forEach(ui -> {
-                    Messages messages = beanLocator.get(Messages.class);
+                .forEach(this::notifyMismatchedSessionUi);
+    }
 
-                    String sessionChangedCaption = messages.getMainMessage("sessionChangedCaption");
-                    String sessionChanged = messages.getMainMessage("sessionChanged");
+    protected void notifyMismatchedSessionUi(AppUI ui) {
+        Messages messages = beanLocator.get(Messages.class);
 
-                    Notification notification = new Notification(sessionChangedCaption, sessionChanged,
-                            Notification.Type.WARNING_MESSAGE);
-                    notification.setDelayMsec(-1);
-                    notification.show(ui.getPage());
-                });
+        String sessionChangedCaption = messages.getMainMessage("sessionChangedCaption");
+        String sessionChanged = messages.getMainMessage("sessionChanged");
+
+        ui.getNotifications()
+                .create(Notifications.NotificationType.SYSTEM)
+                .withCaption(sessionChangedCaption)
+                .withDescription(sessionChanged)
+                .withCloseListener(() ->
+                        Page.getCurrent().open(ControllerUtils.getLocationWithoutParams(), "_self"))
+                .show();
     }
 
     protected void userSubstituted(UserSubstitutedEvent event) {

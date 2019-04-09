@@ -46,7 +46,9 @@ public interface NavigationHandler {
      *
      * @param requestedState requested state represented by {@link NavigationState} instance
      * @param ui             current UI
-     * @return true if {@code requestedState} is fully handled by the handler or false otherwise
+     *
+     * @return true if {@code requestedState} is fully handled by the handler or false if {@code requestedState} should
+     *         be passed through handlers chain
      */
     boolean doHandle(NavigationState requestedState, AppUI ui);
 }

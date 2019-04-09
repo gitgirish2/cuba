@@ -211,7 +211,6 @@ public class ScreenNavigationHandler extends AbstractNavigationHandler implement
             return;
         }
 
-        // TODO: check if can be removed - used in WebScreens
         if (StringUtils.isNotEmpty(screenRoute)
                 && requestedState.getNestedRoute().endsWith(screenRoute)) {
             ((WebWindow) screen.getWindow())

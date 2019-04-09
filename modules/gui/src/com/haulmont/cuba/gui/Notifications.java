@@ -150,6 +150,21 @@ public interface Notifications {
         int getHideDelayMs();
 
         /**
+         * Sets the listener that will be fired when notification will be closed.
+         *
+         * TODO: change to Consumer with close event
+         *
+         * @param closeListener close listener
+         * @return this
+         */
+        NotificationBuilder withCloseListener(Runnable closeListener);
+
+        /**
+         * @return close listener
+         */
+        Runnable getCloseListener();
+
+        /**
          * Shows notification.
          */
         void show();
@@ -162,7 +177,8 @@ public interface Notifications {
         TRAY,
         HUMANIZED,
         WARNING,
-        ERROR
+        ERROR,
+        SYSTEM
     }
 
     /**

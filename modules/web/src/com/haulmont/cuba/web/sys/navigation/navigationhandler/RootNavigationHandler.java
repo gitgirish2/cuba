@@ -53,13 +53,13 @@ public class RootNavigationHandler extends AbstractNavigationHandler implements 
     @Override
     public boolean doHandle(NavigationState requestedState, AppUI ui) {
         if (isEmptyState(requestedState)
-                || !isRootChanged(requestedState, ui)) {
+                || !rootChanged(requestedState, ui)) {
             return true;
         }
 
         WindowInfo windowInfo = windowConfig.findWindowInfoByRoute(requestedState.getRoot());
         if (windowInfo == null) {
-            log.info("Unable to perform navigation to requested state '{}'", requestedState);
+            log.info("No screen found registered for route '{}'", requestedState.getRoot());
             revertNavigationState(ui);
             return true;
         }
@@ -81,9 +81,8 @@ public class RootNavigationHandler extends AbstractNavigationHandler implements 
                 && MapUtils.isEmpty(requestedState.getParams());
     }
 
-    protected boolean isRootChanged(NavigationState requestedState, AppUI ui) {
-        Screen rootScreen = ui.getScreens()
-                .getOpenedScreens()
+    protected boolean rootChanged(NavigationState requestedState, AppUI ui) {
+        Screen rootScreen = ui.getScreens().getOpenedScreens()
                 .getRootScreenOrNull();
 
         if (rootScreen == null) {
