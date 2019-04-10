@@ -266,6 +266,34 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
                 loadValidatorMessage(digitsValidator, digitsElement);
                 component.addValidator(digitsValidator);
             }
+
+            Element pastElement = constraints.element("past");
+            if (pastElement != null) {
+                PastValidator pastValidator = new PastValidator();
+                loadValidatorMessage(pastValidator, pastElement);
+                component.addValidator(pastValidator);
+            }
+
+            Element pastOrPresentElement = constraints.element("pastOrPresent");
+            if (pastOrPresentElement != null) {
+                PastOrPresentValidator pastOrPresentValidator = new PastOrPresentValidator();
+                loadValidatorMessage(pastOrPresentValidator, pastOrPresentElement);
+                component.addValidator(pastOrPresentValidator);
+            }
+
+            Element futureElement = constraints.element("future");
+            if (futureElement != null) {
+                FutureValidator futureValidator = new FutureValidator();
+                loadValidatorMessage(futureValidator, futureElement);
+                component.addValidator(futureValidator);
+            }
+
+            Element futureOrPresentElement = constraints.element("futureOrPresent");
+            if (futureOrPresentElement != null) {
+                FutureOrPresentValidator futureOrPresentValidator = new FutureOrPresentValidator();
+                loadValidatorMessage(futureOrPresentValidator, futureOrPresentElement);
+                component.addValidator(futureOrPresentValidator);
+            }
         }
     }
 
