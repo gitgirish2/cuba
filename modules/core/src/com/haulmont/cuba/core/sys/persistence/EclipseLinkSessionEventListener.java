@@ -72,7 +72,6 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
         Session session = event.getSession();
         setPrintInnerJoinOnClause(session);
 
-        List<String> missingEnhancements = new ArrayList<>();
         List<String> wrongFetchTypes = new ArrayList<>();
 
         Map<Class, ClassDescriptor> descriptorMap = session.getDescriptors();
@@ -89,7 +88,7 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
             boolean persistenceWeavedChangeTracking = ClassUtils.getAllInterfaces(entityClass).contains(PersistenceWeavedChangeTracking.class);
             if (!cubaEnhanced || !persistenceObject || !persistenceWeaved || !persistenceWeavedFetchGroups
                     || !persistenceWeavedChangeTracking) {
-                missingEnhancements.add(String.format("Entity class %s is missing some of enhancing interfaces:%s%s%s%s%s",
+                throw new EntityNotEnhancedException(String.format("Entity class %s is missing some of enhancing interfaces:%s%s%s%s%s",
                         entityClass.getSimpleName(),
                         cubaEnhanced ? "" : " CubaEnhanced;",
                         persistenceObject ? "" : " PersistenceObject;",
@@ -122,7 +121,7 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
 
                 //Fetch type check
                 if ((mapping.isOneToOneMapping() || mapping.isOneToManyMapping()
-                        || mapping.isManyToOneMapping() || mapping.isOneToManyMapping())) {
+                        || mapping.isManyToOneMapping() || mapping.isManyToManyMapping())) {
                     if (!mapping.isLazy()) {
                         mapping.setIsLazy(true);
                         wrongFetchTypes.add(String.format("EAGER fetch type detected for reference field %s of entity %s; Set to LAZY",
@@ -189,17 +188,6 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
                     }
                 }
             }
-        }
-        if (!missingEnhancements.isEmpty()) {
-            StringBuilder message = new StringBuilder();
-            message.append("\n=================================================================");
-            message.append("\nProblems with entity enhancement detected:");
-            for (String me : missingEnhancements) {
-                message.append("\n");
-                message.append(me);
-            }
-            message.append("\n=================================================================");
-            log.warn(message.toString());
         }
         if (!wrongFetchTypes.isEmpty()) {
             StringBuilder message = new StringBuilder();
