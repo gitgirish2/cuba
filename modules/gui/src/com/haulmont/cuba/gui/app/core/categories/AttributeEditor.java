@@ -72,7 +72,7 @@ import static java.lang.String.format;
 public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
     protected static final Multimap<PropertyType, String> FIELDS_VISIBLE_FOR_DATATYPES = ArrayListMultimap.create();
-    protected static final Set<String> ALWAYS_VISIBLE_FIELDS = ImmutableSet.of("name", "code", "required", "dataType");
+    protected static final Set<String> ALWAYS_VISIBLE_FIELDS = ImmutableSet.of("name", "code", "required", "dataType", "description");
     protected static final String WHERE = " where ";
 
     static {
@@ -172,7 +172,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     @Inject
     protected Icons icons;
 
-    protected LocalizedNameFrame localizedFrame;
+    protected LocalizedNameAndDescriptionFrame localizedFrame;
 
     protected ListEditor<String> enumerationListEditor;
     protected SourceCodeEditor joinField;
@@ -211,8 +211,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         if (globalConfig.getAvailableLocales().size() > 1) {
             tabsheet.getTab("localization").setVisible(true);
 
-            localizedFrame = (LocalizedNameFrame) openFrame(
-                    tabsheet.getTabComponent("localization"), "localizedNameFrame");
+            localizedFrame = (LocalizedNameAndDescriptionFrame) openFrame(
+                    tabsheet.getTabComponent("localization"), "localizedNameAndDescriptionFrame");
             localizedFrame.setWidth("100%");
             localizedFrame.setHeight("250px");
         }
@@ -562,7 +562,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         attribute.setTargetScreens(stringBuilder.toString());
 
         if (localizedFrame != null) {
-            attribute.setLocaleNames(localizedFrame.getValue());
+            attribute.setLocaleNames(localizedFrame.getNamesValue());
+            attribute.setLocaleDescriptions(localizedFrame.getDescriptionsValue());
         }
 
         return true;
@@ -636,7 +637,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         }
 
         if (localizedFrame != null) {
-            localizedFrame.setValue(attribute.getLocaleNames());
+            localizedFrame.setNamesValue(attribute.getLocaleNames());
+            localizedFrame.setDescriptionsValue(attribute.getLocaleDescriptions());
         }
 
         setupVisibility();
