@@ -15,10 +15,14 @@ import java.math.BigInteger;
 import java.time.*;
 import java.util.Date;
 
-public final class ConstraintsHelper {
+public final class ConstraintHelper {
 
     @Nullable
     public static NumberConstraint getNumberConstraint(Number value) {
+        if (value == null) {
+            return null;
+        }
+
         Class clazz = value.getClass();
         if (clazz.equals(Integer.class)) {
             return new BigIntegerConstraint(BigInteger.valueOf(value.longValue()));
@@ -34,6 +38,10 @@ public final class ConstraintsHelper {
 
     @Nullable
     public static <T> TimeConstraint getTimeConstraint(T value) {
+        if (value == null) {
+            return null;
+        }
+
         Class clazz = value.getClass();
         if (clazz.equals(Date.class)) {
             return new DateConstraint((Date) value);

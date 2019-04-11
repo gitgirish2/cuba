@@ -7,7 +7,6 @@ package com.haulmont.cuba.gui.components.validators.constrainsts.time;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.core.global.UserSessionSource;
 
 import java.time.*;
 import java.util.Date;
@@ -17,7 +16,6 @@ import java.util.Map;
 public abstract class AbstractTimeConstraint<T> implements TimeConstraint {
 
     protected TimeSource timeSource = AppBeans.get(TimeSource.NAME);
-    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
     protected T value;
 
     protected static Map<Class, TimeConstraint> constraints = new HashMap<>(5);

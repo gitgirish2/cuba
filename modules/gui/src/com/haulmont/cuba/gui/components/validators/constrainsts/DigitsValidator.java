@@ -5,14 +5,22 @@
 
 package com.haulmont.cuba.gui.components.validators.constrainsts;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.validators.constrainsts.numbers.NumberConstraint;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.util.Locale;
 
-import static com.haulmont.cuba.gui.components.validators.constrainsts.ConstraintsHelper.getNumberConstraint;
+import static com.haulmont.cuba.gui.components.validators.constrainsts.ConstraintHelper.getNumberConstraint;
 
 public class DigitsValidator<T> extends AbstractValidator<T> {
+
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
     protected int integer;
     protected int fraction;
@@ -60,9 +68,15 @@ public class DigitsValidator<T> extends AbstractValidator<T> {
             constraint = getNumberConstraint((Number) value);
         } else if (value instanceof String) {
             try {
-                constraint = getNumberConstraint(new BigDecimal((String) value));
-            } catch (NumberFormatException e) {
-                throw new ValidationException(messages.formatMainMessage("validation.constraints.digits.wrongString", value));
+                Datatype datatype = Datatypes.getNN(BigDecimal.class);
+                Locale locale = userSessionSource.getUserSession().getLocale();
+                BigDecimal bigDecimal = (BigDecimal) datatype.parse((String) value, locale);
+                if (bigDecimal == null) {
+                    throw new ValidationException(messages.formatMainMessage("validation.constraints.digits", value));
+                }
+                constraint = getNumberConstraint(bigDecimal);
+            } catch (ParseException e) {
+                throw new ValidationException(e.getLocalizedMessage());
             }
         }
 

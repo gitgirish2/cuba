@@ -71,4 +71,10 @@ public class SizeValidator<T extends String> extends AbstractValidator<T> {
             }
         }
     }
+
+    protected void checkPositiveValue(long value, String message) {
+        if (value < 0) {
+            throw new IllegalArgumentException(message);
+        }
+    }
 }

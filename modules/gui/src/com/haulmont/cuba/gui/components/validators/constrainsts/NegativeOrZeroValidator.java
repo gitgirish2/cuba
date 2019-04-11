@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.components.validators.constrainsts;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.validators.constrainsts.numbers.NumberConstraint;
 
-import static com.haulmont.cuba.gui.components.validators.constrainsts.ConstraintsHelper.getNumberConstraint;
+import static com.haulmont.cuba.gui.components.validators.constrainsts.ConstraintHelper.getNumberConstraint;
 
 public class NegativeOrZeroValidator<T extends Number> extends AbstractValidator<T> {
 

@@ -10,7 +10,7 @@ import com.haulmont.cuba.gui.components.validators.constrainsts.numbers.NumberCo
 
 import java.math.BigDecimal;
 
-import static com.haulmont.cuba.gui.components.validators.constrainsts.ConstraintsHelper.getNumberConstraint;
+import static com.haulmont.cuba.gui.components.validators.constrainsts.ConstraintHelper.getNumberConstraint;
 
 public class DecimalMaxValidator<T> extends AbstractValidator<T> {
 

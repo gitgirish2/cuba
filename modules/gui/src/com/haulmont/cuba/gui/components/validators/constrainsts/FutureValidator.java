@@ -25,7 +25,7 @@ public class FutureValidator<T> extends AbstractValidator<T> {
             return;
         }
 
-        TimeConstraint timeConstraint = ConstraintsHelper.getTimeConstraint(value);
+        TimeConstraint timeConstraint = ConstraintHelper.getTimeConstraint(value);
         if (timeConstraint == null) {
             throw new IllegalArgumentException("FutureValidator doesn't support following type: '" + value.getClass() + "'");
         }

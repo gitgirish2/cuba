@@ -34,10 +34,4 @@ public abstract class AbstractValidator<T> implements Consumer<T> {
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
     }
-
-    protected void checkPositiveValue(long value, String message) {
-        if (value < 0) {
-            throw new IllegalArgumentException(message);
-        }
-    }
 }

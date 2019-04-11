@@ -25,7 +25,7 @@ public class PastOrPresentValidator<T> extends AbstractValidator<T> {
             return;
         }
 
-        TimeConstraint timeConstraint = ConstraintsHelper.getTimeConstraint(value);
+        TimeConstraint timeConstraint = ConstraintHelper.getTimeConstraint(value);
         if (timeConstraint == null) {
             throw new IllegalArgumentException("PastOrPresentValidator doesn't support following type: '" + value.getClass() + "'");
         }
