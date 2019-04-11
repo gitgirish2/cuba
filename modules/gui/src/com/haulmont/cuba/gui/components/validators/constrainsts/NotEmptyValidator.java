@@ -16,10 +16,11 @@
 
 package com.haulmont.cuba.gui.components.validators.constrainsts;
 
-import com.google.common.base.Strings;
 import com.haulmont.cuba.gui.components.ValidationException;
 
-public class NotEmptyValidator<T extends String> extends AbstractValidator<T> {
+import java.util.Collection;
+
+public class NotEmptyValidator<T> extends AbstractValidator<T> {
 
     public NotEmptyValidator() {
         this.errorMessage = messages.getMainMessage("validation.constraints.notEmpty");
@@ -31,7 +32,17 @@ public class NotEmptyValidator<T extends String> extends AbstractValidator<T> {
 
     @Override
     public void accept(T value) throws ValidationException {
-        if (Strings.isNullOrEmpty(value)) {
+        // consider null value is valid
+        if (value == null) {
+            return;
+        }
+
+        Class clazz = value.getClass();
+        if (Collection.class.isAssignableFrom(clazz)) {
+            if (((Collection) value).isEmpty()) {
+                throw new ValidationException(getErrorMessage());
+            }
+        } else if (clazz.equals(String.class) && ((String) value).isEmpty()) {
             throw new ValidationException(getErrorMessage());
         }
     }

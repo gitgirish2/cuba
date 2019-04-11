@@ -1151,20 +1151,34 @@
         </xs:all>
     </xs:complexType>
 
-    <xs:group name="dateValidatorGroup">
-        <xs:all>
-            <xs:element name="future" minOccurs="0" maxOccurs="1" type="constraintType"/>
-            <xs:element name="futureOrPresent" minOccurs="0" maxOccurs="1" type="constraintType"/>
-            <xs:element name="past" minOccurs="0" maxOccurs="1" type="constraintType"/>
-            <xs:element name="pastOrPresent" minOccurs="0" maxOccurs="1" type="constraintType"/>
-        </xs:all>
-    </xs:group>
+    <xs:complexType name="collectionValidatorsType">
+        <xs:complexContent>
+            <xs:extension base="baseValidatorsType">
+                <xs:all>
+                    <xs:element name="size" minOccurs="0" maxOccurs="1" type="sizeConstraintType"/>
+                    <xs:element name="notEmpty" minOccurs="0" maxOccurs="1" type="constraintType"/>
+                </xs:all>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="dateValidatorType">
+        <xs:complexContent>
+            <xs:extension base="baseValidatorsType">
+                <xs:all>
+                    <xs:element name="future" minOccurs="0" maxOccurs="1" type="constraintType"/>
+                    <xs:element name="futureOrPresent" minOccurs="0" maxOccurs="1" type="constraintType"/>
+                    <xs:element name="past" minOccurs="0" maxOccurs="1" type="constraintType"/>
+                    <xs:element name="pastOrPresent" minOccurs="0" maxOccurs="1" type="constraintType"/>
+                </xs:all>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
 
     <xs:complexType name="constraintsType">
         <xs:complexContent>
             <xs:extension base="baseValidatorsType">
                 <xs:sequence>
-                    <xs:group ref="dateValidatorGroup"/>
                     <xs:element name="notEmpty" minOccurs="0" maxOccurs="1" type="constraintType"/>
                     <xs:element name="notBlank" minOccurs="0" maxOccurs="1" type="constraintType"/>
                     <xs:element name="regexp" minOccurs="0" maxOccurs="1" type="regexpConstraintType"/>
@@ -1659,6 +1673,7 @@
             <xs:extension base="baseFieldComponent">
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" type="validatorType"/>
+                    <xs:element name="constraints" minOccurs="0" type="dateValidatorType"/>
                 </xs:sequence>
 
                 <xs:attribute name="stylename" type="dateFieldStylename"/>
@@ -1714,6 +1729,7 @@
             <xs:extension base="baseFieldComponent">
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" type="validatorType"/>
+                    <xs:element name="constraints" minOccurs="0" type="dateValidatorType"/>
                 </xs:sequence>
                 <xs:attribute name="showSeconds" type="xs:boolean"/>
                 <xs:attribute name="timeFormat" type="xs:string"/>
@@ -1937,7 +1953,7 @@
             <xs:extension base="baseFieldComponent">
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" type="validatorType"/>
-
+                    <xs:element name="constraints" minOccurs="0" type="collectionValidatorsType"/>
                 </xs:sequence>
 
                 <xs:attributeGroup ref="hasCaptionSource"/>
@@ -2679,6 +2695,7 @@
             <xs:extension base="baseComponent">
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" type="validatorType"/>
+                    <xs:element name="constraints" minOccurs="0" type="collectionValidatorsType"/>
                 </xs:sequence>
 
                 <xs:attributeGroup ref="hasDatasource"/>

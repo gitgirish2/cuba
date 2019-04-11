@@ -18,7 +18,9 @@ package com.haulmont.cuba.gui.components.validators.constrainsts;
 
 import com.haulmont.cuba.gui.components.ValidationException;
 
-public class SizeValidator<T extends String> extends AbstractValidator<T> {
+import java.util.Collection;
+
+public class SizeValidator<T> extends AbstractValidator<T> {
 
     protected int min;
     protected int max = Integer.MAX_VALUE;
@@ -65,8 +67,19 @@ public class SizeValidator<T extends String> extends AbstractValidator<T> {
     @Override
     public void accept(T value) throws ValidationException {
         // consider that null value is in range
-        if (value != null) {
-            if (min > value.length() || value.length() > max) {
+        if (value == null) {
+            return;
+        }
+
+        Class clazz = value.getClass();
+        if (Collection.class.isAssignableFrom(clazz)) {
+            int size = ((Collection) value).size();
+            if (min > size || size > max) {
+                throw new ValidationException(String.format(getErrorMessage(), value, min, max));
+            }
+        } else if (clazz.equals(String.class)) {
+            int length = ((String) value).length();
+            if (min > length || length > max) {
                 throw new ValidationException(String.format(getErrorMessage(), value, min, max));
             }
         }
