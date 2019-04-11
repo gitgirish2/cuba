@@ -73,6 +73,7 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
         setPrintInnerJoinOnClause(session);
 
         List<String> wrongFetchTypes = new ArrayList<>();
+        List<String> missingEnhancements = new ArrayList<>();
 
         Map<Class, ClassDescriptor> descriptorMap = session.getDescriptors();
         boolean hasMultipleTableConstraintDependency = hasMultipleTableConstraintDependency();
@@ -86,15 +87,20 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
             boolean persistenceWeaved = ClassUtils.getAllInterfaces(entityClass).contains(PersistenceWeaved.class);
             boolean persistenceWeavedFetchGroups = ClassUtils.getAllInterfaces(entityClass).contains(PersistenceWeavedFetchGroups.class);
             boolean persistenceWeavedChangeTracking = ClassUtils.getAllInterfaces(entityClass).contains(PersistenceWeavedChangeTracking.class);
-            if (!cubaEnhanced || !persistenceObject || !persistenceWeaved || !persistenceWeavedFetchGroups
+            if (!cubaEnhanced || persistenceObject || !persistenceWeaved || !persistenceWeavedFetchGroups
                     || !persistenceWeavedChangeTracking) {
-                throw new EntityNotEnhancedException(String.format("Entity class %s is missing some of enhancing interfaces:%s%s%s%s%s",
+                String message = String.format("Entity class %s is missing some of enhancing interfaces:%s%s%s%s%s",
                         entityClass.getSimpleName(),
                         cubaEnhanced ? "" : " CubaEnhanced;",
-                        persistenceObject ? "" : " PersistenceObject;",
+                        !persistenceObject ? "" : " PersistenceObject;",
                         persistenceWeaved ? "" : " PersistenceWeaved;",
                         persistenceWeavedFetchGroups ? "" : " PersistenceWeavedFetchGroups;",
-                        persistenceWeavedChangeTracking ? "" : " PersistenceWeavedChangeTracking;"));
+                        persistenceWeavedChangeTracking ? "" : " PersistenceWeavedChangeTracking;");
+                if (Boolean.valueOf(AppContext.getProperty("cuba.enhancingHardCheck"))) {
+                    throw new EntityNotEnhancedException(message);
+                } else {
+                    missingEnhancements.add(message);
+                }
             }
 
             setCacheable(metaClass, desc, session);
@@ -196,6 +202,17 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
             for (String wft : wrongFetchTypes) {
                 message.append("\n");
                 message.append(wft);
+            }
+            message.append("\n=================================================================");
+            log.warn(message.toString());
+        }
+        if (!missingEnhancements.isEmpty()) {
+            StringBuilder message = new StringBuilder();
+            message.append("\n=================================================================");
+            message.append("\nProblems with entity enhancement detected:");
+            for (String me : missingEnhancements) {
+                message.append("\n");
+                message.append(me);
             }
             message.append("\n=================================================================");
             log.warn(message.toString());
