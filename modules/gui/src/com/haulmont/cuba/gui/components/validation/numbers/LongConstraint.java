@@ -3,29 +3,28 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
  */
 
-package com.haulmont.cuba.gui.components.validators.constrainsts.numbers;
+package com.haulmont.cuba.gui.components.validation.numbers;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
-public class BigIntegerConstraint implements NumberConstraint {
+public class LongConstraint implements NumberConstraint {
 
-    protected BigInteger value;
+    protected Long value;
     protected BigDecimal bigDecimalValue;
 
-    public BigIntegerConstraint(BigInteger value) {
+    public LongConstraint(Long value) {
         this.value = value;
         this.bigDecimalValue = new BigDecimal(value);
     }
 
     @Override
     public boolean isMax(long max) {
-        return compareValueWith(max) <= 1;
+        return value <= max;
     }
 
     @Override
     public boolean isMin(long min) {
-        return compareValueWith(min) >= 0;
+        return value >= min;
     }
 
     @Override
@@ -58,26 +57,22 @@ public class BigIntegerConstraint implements NumberConstraint {
 
     @Override
     public boolean isNegativeOrZero() {
-        return value.signum() <= 0;
+        return value <= 0;
     }
 
     @Override
     public boolean isNegative() {
-        return value.signum() < 0;
+        return value < 0;
     }
 
     @Override
     public boolean isPositiveOrZero() {
-        return value.signum() >= 0;
+        return value >= 0;
     }
 
     @Override
     public boolean isPositive() {
-        return value.signum() > 0;
-    }
-
-    protected int compareValueWith(long val) {
-        return value.compareTo(BigInteger.valueOf(val));
+        return value > 0;
     }
 
     protected int compareValueWith(BigDecimal val) {

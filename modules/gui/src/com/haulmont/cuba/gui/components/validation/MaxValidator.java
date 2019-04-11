@@ -3,12 +3,12 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
  */
 
-package com.haulmont.cuba.gui.components.validators.constrainsts;
+package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.components.validators.constrainsts.numbers.NumberConstraint;
+import com.haulmont.cuba.gui.components.validation.numbers.NumberConstraint;
 
-import static com.haulmont.cuba.gui.components.validators.constrainsts.ConstraintHelper.getNumberConstraint;
+import static com.haulmont.cuba.gui.components.validation.ConstraintHelper.getNumberConstraint;
 
 public class MaxValidator<T extends Number> extends AbstractValidator<T> {
 

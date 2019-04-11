@@ -3,10 +3,10 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
  */
 
-package com.haulmont.cuba.gui.components.validators.constrainsts;
+package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.components.validators.constrainsts.time.TimeConstraint;
+import com.haulmont.cuba.gui.components.validation.time.TimeConstraint;
 
 public class FutureValidator<T> extends AbstractValidator<T> {
 

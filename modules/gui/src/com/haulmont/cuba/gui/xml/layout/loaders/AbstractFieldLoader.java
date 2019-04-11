@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Buffered;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.HasDatatype;
-import com.haulmont.cuba.gui.components.validators.constrainsts.*;
+import com.haulmont.cuba.gui.components.validation.*;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
@@ -149,14 +149,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
                 component.addValidator(sizeValidator);
             }
 
-            Element mustBeNullElement = constraints.element("mustBeNull");
-            if (mustBeNullElement != null) {
-                NullValidator nullValidator = new NullValidator<>();
-                loadValidatorMessage(nullValidator, mustBeNullElement);
-                component.addValidator(nullValidator);
-            }
-
-            Element mustBeNotNullElement = constraints.element("mustBeNotNull");
+            Element mustBeNotNullElement = constraints.element("notNull");
             if (mustBeNotNullElement != null) {
                 NotNullValidator notNullValidator = new NotNullValidator<>();
                 loadValidatorMessage(notNullValidator, mustBeNotNullElement);

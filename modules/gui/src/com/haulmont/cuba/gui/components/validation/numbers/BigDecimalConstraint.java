@@ -3,33 +3,31 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
  */
 
-package com.haulmont.cuba.gui.components.validators.constrainsts.numbers;
+package com.haulmont.cuba.gui.components.validation.numbers;
 
 import java.math.BigDecimal;
 
-public class LongConstraint implements NumberConstraint {
+public class BigDecimalConstraint implements NumberConstraint {
 
-    protected Long value;
-    protected BigDecimal bigDecimalValue;
+    protected BigDecimal value;
 
-    public LongConstraint(Long value) {
+    public BigDecimalConstraint(BigDecimal value) {
         this.value = value;
-        this.bigDecimalValue = new BigDecimal(value);
     }
 
     @Override
     public boolean isMax(long max) {
-        return value <= max;
+        return compareValueWith(max) <= 0;
     }
 
     @Override
     public boolean isMin(long min) {
-        return value >= min;
+        return compareValueWith(min) >= 0;
     }
 
     @Override
     public boolean isDigits(int integer, int fraction) {
-        BigDecimal bigDecimal = new BigDecimal(value).stripTrailingZeros();
+        BigDecimal bigDecimal = value.stripTrailingZeros();
 
         int integerLength = bigDecimal.precision() - bigDecimal.scale();
         int fractionLength = bigDecimal.scale() < 0 ? 0 : bigDecimal.scale();
@@ -57,25 +55,29 @@ public class LongConstraint implements NumberConstraint {
 
     @Override
     public boolean isNegativeOrZero() {
-        return value <= 0;
+        return value.signum() <= 0;
     }
 
     @Override
     public boolean isNegative() {
-        return value < 0;
+        return value.signum() < 0;
     }
 
     @Override
     public boolean isPositiveOrZero() {
-        return value >= 0;
+        return value.signum() >= 0;
     }
 
     @Override
     public boolean isPositive() {
-        return value > 0;
+        return value.signum() > 0;
     }
 
-    protected int compareValueWith(BigDecimal val) {
-        return bigDecimalValue.compareTo(val);
+    protected int compareValueWith(long val) {
+        return this.value.compareTo(BigDecimal.valueOf(val));
+    }
+
+    private int compareValueWith(BigDecimal val) {
+        return this.value.compareTo(val);
     }
 }

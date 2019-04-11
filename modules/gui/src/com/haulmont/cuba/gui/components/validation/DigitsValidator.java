@@ -3,20 +3,20 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
  */
 
-package com.haulmont.cuba.gui.components.validators.constrainsts;
+package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.components.validators.constrainsts.numbers.NumberConstraint;
+import com.haulmont.cuba.gui.components.validation.numbers.NumberConstraint;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Locale;
 
-import static com.haulmont.cuba.gui.components.validators.constrainsts.ConstraintHelper.getNumberConstraint;
+import static com.haulmont.cuba.gui.components.validation.ConstraintHelper.getNumberConstraint;
 
 public class DigitsValidator<T> extends AbstractValidator<T> {
 

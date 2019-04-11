@@ -1146,8 +1146,7 @@
 
     <xs:complexType name="baseValidatorsType">
         <xs:all>
-            <xs:element name="mustBeNull" minOccurs="0" maxOccurs="1" type="constraintType"/>
-            <xs:element name="mustBeNotNull" minOccurs="0" maxOccurs="1" type="constraintType"/>
+            <xs:element name="notNull" minOccurs="0" maxOccurs="1" type="constraintType"/>
         </xs:all>
     </xs:complexType>
 

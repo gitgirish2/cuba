@@ -3,11 +3,11 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
  */
 
-package com.haulmont.cuba.gui.components.validators.constrainsts;
+package com.haulmont.cuba.gui.components.validation;
 
-import com.haulmont.cuba.gui.components.validators.constrainsts.numbers.*;
-import com.haulmont.cuba.gui.components.validators.constrainsts.time.AbstractTimeConstraint.*;
-import com.haulmont.cuba.gui.components.validators.constrainsts.time.TimeConstraint;
+import com.haulmont.cuba.gui.components.validation.numbers.*;
+import com.haulmont.cuba.gui.components.validation.time.AbstractTimeConstraint.*;
+import com.haulmont.cuba.gui.components.validation.time.TimeConstraint;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;

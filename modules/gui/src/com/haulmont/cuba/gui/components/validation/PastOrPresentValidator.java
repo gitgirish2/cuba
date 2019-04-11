@@ -3,18 +3,18 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
  */
 
-package com.haulmont.cuba.gui.components.validators.constrainsts;
+package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.components.validators.constrainsts.time.TimeConstraint;
+import com.haulmont.cuba.gui.components.validation.time.TimeConstraint;
 
-public class FutureOrPresentValidator<T> extends AbstractValidator<T> {
+public class PastOrPresentValidator<T> extends AbstractValidator<T> {
 
-    public FutureOrPresentValidator() {
-        this.errorMessage = messages.getMainMessage("validation.constraints.futureOrPresent");
+    public PastOrPresentValidator() {
+        this.errorMessage = messages.getMainMessage("validation.constraints.pastOrPresent");
     }
 
-    public FutureOrPresentValidator(String errorMessage) {
+    public PastOrPresentValidator(String errorMessage) {
         this.errorMessage = errorMessage;
     }
 
@@ -27,10 +27,10 @@ public class FutureOrPresentValidator<T> extends AbstractValidator<T> {
 
         TimeConstraint timeConstraint = ConstraintHelper.getTimeConstraint(value);
         if (timeConstraint == null) {
-            throw new IllegalArgumentException("FutureOrPresentValidator doesn't support following type: '" + value.getClass() + "'");
+            throw new IllegalArgumentException("PastOrPresentValidator doesn't support following type: '" + value.getClass() + "'");
         }
 
-        if (!timeConstraint.isFutureOrPresent()) {
+        if (!timeConstraint.isPastOrPresent()) {
             throw new ValidationException(getErrorMessage());
         }
     }
