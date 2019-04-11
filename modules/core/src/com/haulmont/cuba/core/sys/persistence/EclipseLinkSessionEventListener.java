@@ -87,19 +87,19 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
             boolean persistenceWeaved = ClassUtils.getAllInterfaces(entityClass).contains(PersistenceWeaved.class);
             boolean persistenceWeavedFetchGroups = ClassUtils.getAllInterfaces(entityClass).contains(PersistenceWeavedFetchGroups.class);
             boolean persistenceWeavedChangeTracking = ClassUtils.getAllInterfaces(entityClass).contains(PersistenceWeavedChangeTracking.class);
-            if (!cubaEnhanced || persistenceObject || !persistenceWeaved || !persistenceWeavedFetchGroups
+            if (!cubaEnhanced || !persistenceObject || !persistenceWeaved || !persistenceWeavedFetchGroups
                     || !persistenceWeavedChangeTracking) {
                 String message = String.format("Entity class %s is missing some of enhancing interfaces:%s%s%s%s%s",
                         entityClass.getSimpleName(),
                         cubaEnhanced ? "" : " CubaEnhanced;",
-                        !persistenceObject ? "" : " PersistenceObject;",
+                        persistenceObject ? "" : " PersistenceObject;",
                         persistenceWeaved ? "" : " PersistenceWeaved;",
                         persistenceWeavedFetchGroups ? "" : " PersistenceWeavedFetchGroups;",
                         persistenceWeavedChangeTracking ? "" : " PersistenceWeavedChangeTracking;");
-                if (Boolean.valueOf(AppContext.getProperty("cuba.enhancingHardCheck"))) {
-                    throw new EntityNotEnhancedException(message);
-                } else {
+                if (Boolean.valueOf(AppContext.getProperty("cuba.disableEntityNotEnhancedException"))) {
                     missingEnhancements.add(message);
+                } else {
+                    throw new EntityNotEnhancedException(message);
                 }
             }
 
