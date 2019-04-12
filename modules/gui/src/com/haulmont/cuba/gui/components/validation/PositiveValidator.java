@@ -5,19 +5,34 @@
 
 package com.haulmont.cuba.gui.components.validation;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.validation.numbers.NumberConstraint;
 
 import static com.haulmont.cuba.gui.components.validation.ConstraintHelper.getNumberConstraint;
 
+/**
+ * Positive validator checks that value should be a strictly greater than 0.
+ * <p>
+ * For error message it uses Groovy string and it is possible to use '$value' key for formatted output.
+ *
+ * @param <T> BigDecimal, BigInteger, Long, Integer, Double, Float
+ */
 public class PositiveValidator<T extends Number> extends AbstractValidator<T> {
 
     public PositiveValidator() {
-        this.errorMessage = messages.getMainMessage("validation.constraints.positive");
+        this.defaultMessage = messages.getMainMessage("validation.constraints.positive");
     }
 
-    public PositiveValidator(String messageError) {
-        this.errorMessage = messageError;
+    /**
+     * Constructor for custom error message. This message can contain '$value' key for formatted output.
+     * <p>
+     * Example: "Value '$value' should be greater than 0".
+     *
+     * @param message error message
+     */
+    public PositiveValidator(String message) {
+        this.message = message;
     }
 
     @Override
@@ -33,7 +48,7 @@ public class PositiveValidator<T extends Number> extends AbstractValidator<T> {
         }
 
         if (!constraint.isPositive()) {
-            throw new ValidationException(String.format(getErrorMessage(), value));
+            throw new ValidationException(getTemplateErrorMessage(ParamsMap.of("value", value)));
         }
     }
 }

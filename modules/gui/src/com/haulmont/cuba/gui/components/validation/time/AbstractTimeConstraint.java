@@ -19,6 +19,8 @@ public abstract class AbstractTimeConstraint<T> implements TimeConstraint {
     protected TimeSource timeSource = AppBeans.get(TimeSource.NAME);
     protected T value;
 
+    protected boolean checkSeconds;
+
     protected static Map<Class, TimeConstraint> constraints = new HashMap<>(5);
 
     @Override
@@ -41,6 +43,11 @@ public abstract class AbstractTimeConstraint<T> implements TimeConstraint {
         return compareValueWithCurrent() >= 0;
     }
 
+    @Override
+    public void setCheckSeconds(boolean checkSeconds) {
+        this.checkSeconds = checkSeconds;
+    }
+
     public abstract int compareValueWithCurrent();
 
     public static class DateConstraint extends AbstractTimeConstraint<Date> {
@@ -51,21 +58,23 @@ public abstract class AbstractTimeConstraint<T> implements TimeConstraint {
 
         @Override
         public int compareValueWithCurrent() {
+            if (!checkSeconds) {
+                Date current = getWithoutSeconds(timeSource.currentTimestamp());
+                Date val = getWithoutSeconds(value);
+                return val.compareTo(current);
+            }
+
             Date currentValue = timeSource.currentTimestamp();
             return value.compareTo(currentValue);
         }
 
-        @Override
-        public boolean isFutureOrPresent() {
-            Date currentValue = timeSource.currentTimestamp();
-            // set 0 sec and millis to currentValue because we don't know what time format is used
-            // and in case when we set current HH:mm validator will consider that it is not valid
+        protected Date getWithoutSeconds(Date value) {
+            Date date = new Date(value.getTime());
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(currentValue);
+            calendar.setTime(date);
             calendar.clear(Calendar.SECOND);
             calendar.clear(Calendar.MILLISECOND);
-
-            return value.compareTo(calendar.getTime()) >= 0;
+            return calendar.getTime();
         }
     }
 
@@ -90,16 +99,18 @@ public abstract class AbstractTimeConstraint<T> implements TimeConstraint {
 
         @Override
         public int compareValueWithCurrent() {
+            if (!checkSeconds) {
+                LocalDateTime current = getWithoutSeconds(timeSource.now().toLocalDateTime());
+                LocalDateTime val = getWithoutSeconds(value);
+                return val.compareTo(current);
+            }
+
             LocalDateTime currentValue = timeSource.now().toLocalDateTime();
             return value.compareTo(currentValue);
         }
 
-        @Override
-        public boolean isFutureOrPresent() {
-            LocalDateTime currentValue = timeSource.now().toLocalDateTime();
-            // set 0 sec and nano to currentValue because we don't know what time format is used
-            // and in case when we set current HH:mm validator will consider that it is not valid
-            return value.compareTo(currentValue.withSecond(0).withNano(0)) >= 0;
+        protected LocalDateTime getWithoutSeconds(LocalDateTime value) {
+            return value.withSecond(0).withNano(0);
         }
     }
 
@@ -111,16 +122,18 @@ public abstract class AbstractTimeConstraint<T> implements TimeConstraint {
 
         @Override
         public int compareValueWithCurrent() {
+            if (!checkSeconds) {
+                LocalTime current = getWithoutSeconds(timeSource.now().toLocalTime());
+                LocalTime val = getWithoutSeconds(value);
+                return val.compareTo(current);
+            }
+
             LocalTime currentValue = timeSource.now().toLocalTime();
             return value.compareTo(currentValue);
         }
 
-        @Override
-        public boolean isFutureOrPresent() {
-            LocalTime currentValue = timeSource.now().toLocalTime();
-            // set 0 sec and nano to currentValue because we don't know what time format is used
-            // and in case when we set current HH:mm validator will consider that it is not valid
-            return value.compareTo(currentValue.withSecond(0).withNano(0)) >= 0;
+        protected LocalTime getWithoutSeconds(LocalTime value) {
+            return value.withSecond(0).withNano(0);
         }
     }
 
@@ -132,16 +145,18 @@ public abstract class AbstractTimeConstraint<T> implements TimeConstraint {
 
         @Override
         public int compareValueWithCurrent() {
+            if (!checkSeconds) {
+                OffsetTime current = getWithoutSeconds(timeSource.now().toOffsetDateTime().toOffsetTime());
+                OffsetTime val = getWithoutSeconds(value);
+                return val.compareTo(current);
+            }
+
             OffsetTime currentValue = timeSource.now().toOffsetDateTime().toOffsetTime();
             return value.compareTo(currentValue);
         }
 
-        @Override
-        public boolean isFutureOrPresent() {
-            OffsetTime currentValue = timeSource.now().toOffsetDateTime().toOffsetTime();
-            // set 0 sec and nano to currentValue because we don't know what time format is used
-            // and in case when we set current HH:mm validator will consider that it is not valid
-            return value.compareTo(currentValue.withSecond(0).withNano(0)) >= 0;
+        protected OffsetTime getWithoutSeconds(OffsetTime value) {
+            return value.withSecond(0).withNano(0);
         }
     }
 
@@ -153,16 +168,18 @@ public abstract class AbstractTimeConstraint<T> implements TimeConstraint {
 
         @Override
         public int compareValueWithCurrent() {
+            if (!checkSeconds) {
+                OffsetDateTime current = getWithoutSeconds(timeSource.now().toOffsetDateTime());
+                OffsetDateTime val = getWithoutSeconds(value);
+                return val.compareTo(current);
+            }
+
             OffsetDateTime currentValue = timeSource.now().toOffsetDateTime();
             return value.compareTo(currentValue);
         }
 
-        @Override
-        public boolean isFutureOrPresent() {
-            OffsetDateTime currentValue = timeSource.now().toOffsetDateTime();
-            // set 0 sec and nano to currentValue because we don't know what time format is used
-            // and in case when we set current HH:mm validator will consider that it is not valid
-            return value.compareTo(currentValue.withSecond(0).withNano(0)) >= 0;
+        protected OffsetDateTime getWithoutSeconds(OffsetDateTime value) {
+            return value.withSecond(0).withNano(0);
         }
     }
 }

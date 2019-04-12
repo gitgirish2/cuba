@@ -9,21 +9,34 @@ import com.haulmont.cuba.gui.components.ValidationException;
 
 import java.util.Collection;
 
+/**
+ * NotEmpty validator checks that value is not null and not empty.
+ * <p>
+ * For error message it uses Groovy string and it is possible to use '$value' keys for formatted output.
+ * <p>
+ * Note, that size validator for Collection doesn't use key 'value' for output error message.
+ *
+ * @param <T> Collection or String
+ */
 public class NotEmptyValidator<T> extends AbstractValidator<T> {
 
     public NotEmptyValidator() {
-        this.errorMessage = messages.getMainMessage("validation.constraints.notEmpty");
+        this.defaultMessage = messages.getMainMessage("validation.constraints.notEmpty");
     }
 
-    public NotEmptyValidator(String errorMessage) {
-        this.errorMessage = errorMessage;
+    /**
+     * Constructor for custom error message.
+     *
+     * @param message error message
+     */
+    public NotEmptyValidator(String message) {
+        this.message = message;
     }
 
     @Override
     public void accept(T value) throws ValidationException {
-        // consider null value is valid
         if (value == null) {
-            return;
+            throw new ValidationException(getErrorMessage());
         }
 
         Class clazz = value.getClass();

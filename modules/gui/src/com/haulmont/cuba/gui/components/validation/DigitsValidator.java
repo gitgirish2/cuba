@@ -26,13 +26,13 @@ public class DigitsValidator<T> extends AbstractValidator<T> {
     protected int fraction;
 
     public DigitsValidator(int integer, int fraction) {
-        this.errorMessage = messages.getMainMessage("validation.constraints.digits");
+        this.defaultMessage = messages.getMainMessage("validation.constraints.digits");
         this.integer = integer;
         this.fraction = fraction;
     }
 
     public DigitsValidator(int integer, int fraction, String errorMessage) {
-        this.errorMessage = errorMessage;
+        this.defaultMessage = errorMessage;
         this.integer = integer;
         this.fraction = fraction;
     }
@@ -85,7 +85,7 @@ public class DigitsValidator<T> extends AbstractValidator<T> {
         }
 
         if (!constraint.isDigits(integer, fraction)) {
-            throw new ValidationException(String.format(getErrorMessage(), value, integer, fraction));
+            throw new ValidationException(String.format(getMessage(), value, integer, fraction));
         }
     }
 }

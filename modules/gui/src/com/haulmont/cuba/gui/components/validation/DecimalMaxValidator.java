@@ -18,11 +18,11 @@ public class DecimalMaxValidator<T> extends AbstractValidator<T> {
     protected boolean inclusive = true;
 
     public DecimalMaxValidator() {
-        this.errorMessage = messages.getMainMessage("validation.constraints.decimalMax");
+        this.defaultMessage = messages.getMainMessage("validation.constraints.decimalMax");
     }
 
     public DecimalMaxValidator(String errorMessage) {
-        this.errorMessage = errorMessage;
+        this.defaultMessage = errorMessage;
     }
 
     public DecimalMaxValidator<T> withMax(String max) {
@@ -69,7 +69,7 @@ public class DecimalMaxValidator<T> extends AbstractValidator<T> {
         }
 
         if (!constraint.isDecimalMax(max, inclusive)) {
-            throw new ValidationException(String.format(getErrorMessage(), value, max));
+            throw new ValidationException(String.format(getMessage(), value, max));
         }
     }
 }

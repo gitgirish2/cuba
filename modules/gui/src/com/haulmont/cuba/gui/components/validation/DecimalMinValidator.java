@@ -18,11 +18,11 @@ public class DecimalMinValidator<T> extends AbstractValidator<T> {
     protected boolean inclusive = true;
 
     public DecimalMinValidator() {
-        this.errorMessage = messages.getMainMessage("validation.constraints.decimalMin");
+        this.defaultMessage = messages.getMainMessage("validation.constraints.decimalMin");
     }
 
     public DecimalMinValidator(String errorMessage) {
-        this.errorMessage = errorMessage;
+        this.defaultMessage = errorMessage;
     }
 
     public DecimalMinValidator<T> withMin(String min) {
@@ -69,7 +69,7 @@ public class DecimalMinValidator<T> extends AbstractValidator<T> {
         }
 
         if (!constraint.isDecimalMin(min, inclusive)) {
-            throw new ValidationException(String.format(getErrorMessage(), value, min));
+            throw new ValidationException(String.format(getMessage(), value, min));
         }
     }
 }

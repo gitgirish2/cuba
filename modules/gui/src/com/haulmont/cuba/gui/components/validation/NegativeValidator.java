@@ -5,19 +5,34 @@
 
 package com.haulmont.cuba.gui.components.validation;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.validation.numbers.NumberConstraint;
 
 import static com.haulmont.cuba.gui.components.validation.ConstraintHelper.getNumberConstraint;
 
+/**
+ * NEgative validator checks that value should be a strictly less than 0.
+ * <p>
+ * For error message it uses Groovy string and it is possible to use '$value' key for formatted output.
+ *
+ * @param <T> BigDecimal, BigInteger, Long, Integer, Double, Float
+ */
 public class NegativeValidator<T extends Number> extends AbstractValidator<T> {
 
     public NegativeValidator() {
-        this.errorMessage = messages.getMainMessage("validation.constraints.negative");
+        this.defaultMessage = messages.getMainMessage("validation.constraints.negative");
     }
 
-    public NegativeValidator(String errorMessage) {
-        this.errorMessage = errorMessage;
+    /**
+     * Constructor for custom error message. This message can contain '$value' key for formatted output.
+     * <p>
+     * Example: "Value '$value' should be greater than 0".
+     *
+     * @param message error message
+     */
+    public NegativeValidator(String message) {
+        this.message = message;
     }
 
     @Override
@@ -33,7 +48,7 @@ public class NegativeValidator<T extends Number> extends AbstractValidator<T> {
         }
 
         if (!constraint.isNegative()) {
-            throw new ValidationException(String.format(getErrorMessage(), value));
+            throw new ValidationException(getTemplateErrorMessage(ParamsMap.of("value", value)));
         }
     }
 }

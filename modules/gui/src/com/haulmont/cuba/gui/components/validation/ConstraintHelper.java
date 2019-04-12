@@ -24,7 +24,7 @@ public final class ConstraintHelper {
         }
 
         Class clazz = value.getClass();
-        if (clazz.equals(Integer.class)) {
+        if (clazz.equals(Integer.class) || clazz.equals(BigInteger.class)) {
             return new BigIntegerConstraint(BigInteger.valueOf(value.longValue()));
         } else if (clazz.equals(Long.class) && value.longValue() <= 0) {
             return new LongConstraint(value.longValue());
@@ -32,6 +32,8 @@ public final class ConstraintHelper {
             return new BigDecimalConstraint((BigDecimal) value);
         } else if (clazz.equals(Double.class)) {
             return new DoubleConstraint(value.doubleValue());
+        } else if (clazz.equals(Float.class)) {
+            return new FloatConstraint(value.floatValue());
         }
         return null;
     }
@@ -47,6 +49,8 @@ public final class ConstraintHelper {
             return new DateConstraint((Date) value);
         } else if (clazz.equals(LocalDate.class)) {
             return new LocalDateConstraint((LocalDate) value);
+        } else if (clazz.equals(java.sql.Date.class)) {
+            return new LocalDateConstraint(((java.sql.Date) value).toLocalDate());
         } else if (clazz.equals(LocalDateTime.class)) {
             return new LocalDateTimeConstraint((LocalDateTime) value);
         } else if (clazz.equals(LocalTime.class)) {

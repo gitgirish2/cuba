@@ -15,11 +15,11 @@ public class MinValidator<T extends Number> extends AbstractValidator<T> {
     protected long min;
 
     public MinValidator() {
-        this.errorMessage = messages.getMainMessage("validation.constraints.min");
+        this.defaultMessage = messages.getMainMessage("validation.constraints.min");
     }
 
     public MinValidator(String errorMessage) {
-        this.errorMessage = errorMessage;
+        this.defaultMessage = errorMessage;
     }
 
     public MinValidator<T> withMin(long min) {
@@ -40,7 +40,7 @@ public class MinValidator<T extends Number> extends AbstractValidator<T> {
         }
 
         if (!constraint.isMin(min)) {
-            throw new ValidationException(String.format(getErrorMessage(), value, min));
+            throw new ValidationException(String.format(getMessage(), value, min));
         }
     }
 }

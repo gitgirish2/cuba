@@ -7,18 +7,26 @@ package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.cuba.gui.components.ValidationException;
 
-public class NotBlankValidator<T extends String> extends AbstractValidator<T> {
+/**
+ * NotBlank validator checks that value contains at least one non-whitespace character.
+ */
+public class NotBlankValidator extends AbstractValidator<String> {
 
     public NotBlankValidator() {
-        this.errorMessage = messages.getMainMessage("validation.constraints.notBlank");
+        this.defaultMessage = messages.getMainMessage("validation.constraints.notBlank");
     }
 
-    public NotBlankValidator(String errorMessage) {
-        this.errorMessage = errorMessage;
+    /**
+     * Constructor for custom error message.
+     *
+     * @param message error message
+     */
+    public NotBlankValidator(String message) {
+        this.message = message;
     }
 
     @Override
-    public void accept(T value) throws ValidationException {
+    public void accept(String value) throws ValidationException {
         if (value == null || value.trim().length() == 0) {
             throw new ValidationException(getErrorMessage());
         }

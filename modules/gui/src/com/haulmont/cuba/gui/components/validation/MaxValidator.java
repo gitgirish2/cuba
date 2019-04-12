@@ -15,11 +15,11 @@ public class MaxValidator<T extends Number> extends AbstractValidator<T> {
     protected long max = Long.MAX_VALUE;
 
     public MaxValidator() {
-        this.errorMessage = messages.getMainMessage("validation.constraints.max");
+        this.defaultMessage = messages.getMainMessage("validation.constraints.max");
     }
 
     public MaxValidator(String errorMessage) {
-        this.errorMessage = errorMessage;
+        this.defaultMessage = errorMessage;
     }
 
     public MaxValidator<T> withMax(long max) {
@@ -44,7 +44,7 @@ public class MaxValidator<T extends Number> extends AbstractValidator<T> {
         }
 
         if (!constraint.isMax(max)) {
-            throw new ValidationException(String.format(getErrorMessage(), value, max));
+            throw new ValidationException(String.format(getMessage(), value, max));
         }
     }
 }

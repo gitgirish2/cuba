@@ -6,33 +6,53 @@
 package com.haulmont.cuba.gui.components.validation;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.gui.components.ValidationException;
 
 import java.util.regex.Pattern;
 
-public class RegexpValidator<T extends String> extends AbstractValidator<T> {
+/**
+ * Regexp validator checks that String value is matched with specified regular expression.
+ * <p>
+ * The regular expression follows the Java regular expression conventions.
+ * <p>
+ * For error message it uses Groovy string and it is possible to use '$value' key for formatted output.
+ *
+ * @see java.util.regex.Pattern
+ */
+public class RegexpValidator extends AbstractValidator<String> {
 
     protected Pattern pattern;
 
     public RegexpValidator(String regexp) {
         Preconditions.checkNotNull(regexp);
 
-        this.errorMessage = messages.getMainMessage("validation.constraints.regexp");
+        this.defaultMessage = messages.getMainMessage("validation.constraints.regexp");
         this.pattern = Pattern.compile(regexp);
     }
 
-    public RegexpValidator(String regexp, String errorMessage) {
+    /**
+     * Constructor for regexp value and custom error message. This message can contain '$value' key for formatted output.
+     * Example: "Invalid value '$value'".
+     *
+     * @param regexp  regular expression
+     * @param message error message
+     */
+    public RegexpValidator(String regexp, String message) {
         Preconditions.checkNotNull(regexp);
 
-        this.errorMessage = errorMessage;
+        this.message = message;
         this.pattern = Pattern.compile(regexp);
     }
 
     @Override
-    public void accept(T value) throws ValidationException {
-        if (value == null || !pattern.matcher((value)).matches()) {
-            throw new ValidationException(String.format(getErrorMessage(), Strings.nullToEmpty(value)));
+    public void accept(String value) throws ValidationException {
+        if (value == null) {
+            return;
+        }
+
+        if (!pattern.matcher((value)).matches()) {
+            throw new ValidationException(getTemplateErrorMessage(ParamsMap.of("value", value)));
         }
     }
 }

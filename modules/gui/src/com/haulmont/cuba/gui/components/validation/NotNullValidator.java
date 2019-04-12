@@ -7,14 +7,24 @@ package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.cuba.gui.components.ValidationException;
 
+/**
+ * NotNull validator checks that value is not null.
+ *
+ * @param <T> value type
+ */
 public class NotNullValidator<T> extends AbstractValidator<T> {
 
     public NotNullValidator() {
-        this.errorMessage = messages.getMainMessage("validation.constraints.notNull");
+        this.defaultMessage = messages.getMainMessage("validation.constraints.notNull");
     }
 
-    public NotNullValidator(String errorMessage) {
-        this.errorMessage = errorMessage;
+    /**
+     * Constructor for custom error message.
+     *
+     * @param message error message
+     */
+    public NotNullValidator(String message) {
+        this.message = message;
     }
 
     @Override

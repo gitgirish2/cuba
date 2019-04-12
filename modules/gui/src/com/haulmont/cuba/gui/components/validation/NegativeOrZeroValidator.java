@@ -13,11 +13,11 @@ import static com.haulmont.cuba.gui.components.validation.ConstraintHelper.getNu
 public class NegativeOrZeroValidator<T extends Number> extends AbstractValidator<T> {
 
     public NegativeOrZeroValidator() {
-        this.errorMessage = messages.getMainMessage("validation.constraints.negativeOrZero");
+        this.defaultMessage = messages.getMainMessage("validation.constraints.negativeOrZero");
     }
 
     public NegativeOrZeroValidator(String errorMessage) {
-        this.errorMessage = errorMessage;
+        this.defaultMessage = errorMessage;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class NegativeOrZeroValidator<T extends Number> extends AbstractValidator
         }
 
         if (!constraint.isNegativeOrZero()) {
-            throw new ValidationException(String.format(getErrorMessage(), value));
+            throw new ValidationException(String.format(getMessage(), value));
         }
     }
 }

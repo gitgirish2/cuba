@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
@@ -23,6 +24,7 @@ import com.haulmont.cuba.gui.components.Buffered;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.HasDatatype;
 import com.haulmont.cuba.gui.components.validation.*;
+import com.haulmont.cuba.gui.components.validators.EmailValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
@@ -52,7 +54,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
         loadContextHelp(resultComponent, element);
 
         loadValidators(resultComponent, element);
-        loadConstraints(resultComponent, element);
+        loadConstraintValidators(resultComponent, element);
 
         loadRequired(resultComponent, element);
 
@@ -96,32 +98,32 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
     }
 
     @SuppressWarnings("unchecked")
-    protected void loadConstraints(Field component, Element element) {
-        Element constraints = element.element("constraints");
-        if (constraints != null) {
-            Element notEmptyElement = constraints.element("notEmpty");
+    protected void loadConstraintValidators(Field component, Element element) {
+        Element validators = element.element("validators");
+        if (validators != null) {
+            Element notEmptyElement = validators.element("notEmpty");
             if (notEmptyElement != null) {
                 NotEmptyValidator notEmptyValidator = new NotEmptyValidator();
                 loadValidatorMessage(notEmptyValidator, notEmptyElement);
                 component.addValidator(notEmptyValidator);
             }
 
-            Element notBlankElement = constraints.element("notBlank");
+            Element notBlankElement = validators.element("notBlank");
             if (notBlankElement != null) {
-                NotBlankValidator notBlankValidator = new NotBlankValidator<>();
+                NotBlankValidator notBlankValidator = new NotBlankValidator();
                 loadValidatorMessage(notBlankValidator, notBlankElement);
                 component.addValidator(notBlankValidator);
             }
 
-            Element regexpElement = constraints.element("regexp");
+            Element regexpElement = validators.element("regexp");
             if (regexpElement != null) {
                 String regexp = regexpElement.attributeValue("regexp");
-                RegexpValidator regexpValidator = new RegexpValidator<>(regexp);
+                RegexpValidator regexpValidator = new RegexpValidator(regexp);
                 loadValidatorMessage(regexpValidator, regexpElement);
                 component.addValidator(regexpValidator);
             }
 
-            Element sizeElement = constraints.element("size");
+            Element sizeElement = validators.element("size");
             if (sizeElement != null) {
                 SizeValidator sizeValidator = new SizeValidator();
 
@@ -149,42 +151,42 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
                 component.addValidator(sizeValidator);
             }
 
-            Element mustBeNotNullElement = constraints.element("notNull");
+            Element mustBeNotNullElement = validators.element("notNull");
             if (mustBeNotNullElement != null) {
                 NotNullValidator notNullValidator = new NotNullValidator<>();
                 loadValidatorMessage(notNullValidator, mustBeNotNullElement);
                 component.addValidator(notNullValidator);
             }
 
-            Element negativeOrZeroElement = constraints.element("negativeOrZero");
+            Element negativeOrZeroElement = validators.element("negativeOrZero");
             if (negativeOrZeroElement != null) {
                 NegativeOrZeroValidator negativeOrZeroValidator = new NegativeOrZeroValidator<>();
                 loadValidatorMessage(negativeOrZeroValidator, negativeOrZeroElement);
                 component.addValidator(negativeOrZeroValidator);
             }
 
-            Element negativeElement = constraints.element("negative");
+            Element negativeElement = validators.element("negative");
             if (negativeElement != null) {
                 NegativeValidator negativeValidator = new NegativeValidator<>();
                 loadValidatorMessage(negativeValidator, negativeElement);
                 component.addValidator(negativeValidator);
             }
 
-            Element positiveOrZeroElement = constraints.element("positiveOrZero");
+            Element positiveOrZeroElement = validators.element("positiveOrZero");
             if (positiveOrZeroElement != null) {
                 PositiveOrZeroValidator positiveOrZeroValidator = new PositiveOrZeroValidator<>();
                 loadValidatorMessage(positiveOrZeroValidator, positiveOrZeroElement);
                 component.addValidator(positiveOrZeroValidator);
             }
 
-            Element positiveElement = constraints.element("positive");
+            Element positiveElement = validators.element("positive");
             if (positiveElement != null) {
                 PositiveValidator positiveValidator = new PositiveValidator<>();
                 loadValidatorMessage(positiveValidator, positiveElement);
                 component.addValidator(positiveValidator);
             }
 
-            Element maxElement = constraints.element("max");
+            Element maxElement = validators.element("max");
             if (maxElement != null) {
                 MaxValidator maxValidator = new MaxValidator<>();
                 loadValidatorMessage(maxValidator, maxElement);
@@ -197,7 +199,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
                 component.addValidator(maxValidator);
             }
 
-            Element minElement = constraints.element("min");
+            Element minElement = validators.element("min");
             if (minElement != null) {
                 MinValidator minValidator = new MinValidator<>();
                 loadValidatorMessage(minValidator, minElement);
@@ -210,7 +212,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
                 component.addValidator(minValidator);
             }
 
-            Element decimalMinElement = constraints.element("decimalMin");
+            Element decimalMinElement = validators.element("decimalMin");
             if (decimalMinElement != null) {
                 DecimalMinValidator decimalMinValidator = new DecimalMinValidator<>();
                 loadValidatorMessage(decimalMinValidator, decimalMinElement);
@@ -227,7 +229,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
                 component.addValidator(decimalMinValidator);
             }
 
-            Element decimalMaxElement = constraints.element("decimalMax");
+            Element decimalMaxElement = validators.element("decimalMax");
             if (decimalMaxElement != null) {
                 DecimalMaxValidator decimalMaxValidator = new DecimalMaxValidator<>();
                 loadValidatorMessage(decimalMaxValidator, decimalMaxElement);
@@ -244,7 +246,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
                 component.addValidator(decimalMaxValidator);
             }
 
-            Element digitsElement = constraints.element("digits");
+            Element digitsElement = validators.element("digits");
             if (digitsElement != null) {
                 DigitsValidator digitsValidator;
 
@@ -260,32 +262,57 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
                 component.addValidator(digitsValidator);
             }
 
-            Element pastElement = constraints.element("past");
+            Element pastElement = validators.element("past");
             if (pastElement != null) {
                 PastValidator pastValidator = new PastValidator();
+                String includeSeconds = pastElement.attributeValue("includeSeconds");
+                if (StringUtils.isNotBlank(includeSeconds)) {
+                    pastValidator.withCheckSeconds(Boolean.parseBoolean(includeSeconds));
+                }
+
                 loadValidatorMessage(pastValidator, pastElement);
                 component.addValidator(pastValidator);
             }
 
-            Element pastOrPresentElement = constraints.element("pastOrPresent");
+            Element pastOrPresentElement = validators.element("pastOrPresent");
             if (pastOrPresentElement != null) {
                 PastOrPresentValidator pastOrPresentValidator = new PastOrPresentValidator();
+                String includeSeconds = pastOrPresentElement.attributeValue("includeSeconds");
+                if (StringUtils.isNotBlank(includeSeconds)) {
+                    pastOrPresentValidator.withCheckSeconds(Boolean.parseBoolean(includeSeconds));
+                }
+
                 loadValidatorMessage(pastOrPresentValidator, pastOrPresentElement);
                 component.addValidator(pastOrPresentValidator);
             }
 
-            Element futureElement = constraints.element("future");
+            Element futureElement = validators.element("future");
             if (futureElement != null) {
                 FutureValidator futureValidator = new FutureValidator();
+                String includeSeconds = futureElement.attributeValue("includeSeconds");
+                if (StringUtils.isNotBlank(includeSeconds)) {
+                    futureValidator.withCheckSeconds(Boolean.parseBoolean(includeSeconds));
+                }
+
                 loadValidatorMessage(futureValidator, futureElement);
                 component.addValidator(futureValidator);
             }
 
-            Element futureOrPresentElement = constraints.element("futureOrPresent");
+            Element futureOrPresentElement = validators.element("futureOrPresent");
             if (futureOrPresentElement != null) {
                 FutureOrPresentValidator futureOrPresentValidator = new FutureOrPresentValidator();
+                String includeSeconds = futureOrPresentElement.attributeValue("includeSeconds");
+                if (StringUtils.isNotBlank(includeSeconds)) {
+                    futureOrPresentValidator.withCheckSeconds(Boolean.parseBoolean(includeSeconds));
+                }
+
                 loadValidatorMessage(futureOrPresentValidator, futureOrPresentElement);
                 component.addValidator(futureOrPresentValidator);
+            }
+
+            Element emailElement = validators.element("email");
+            if (emailElement != null) {
+                component.addValidator(new EmailValidator(emailElement, getMessagesPack()));
             }
         }
     }
@@ -293,7 +320,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
     protected void loadValidatorMessage(AbstractValidator validator, Element element) {
         String message = element.attributeValue("message");
         if (message != null) {
-            validator.setErrorMessage(loadResourceString(message));
+            validator.setMessage(loadResourceString(message));
         }
     }
 

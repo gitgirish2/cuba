@@ -14,4 +14,6 @@ public interface TimeConstraint {
     boolean isFuture();
 
     boolean isFutureOrPresent();
+
+    void setCheckSeconds(boolean checkSeconds);
 }

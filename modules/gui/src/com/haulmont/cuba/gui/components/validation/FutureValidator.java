@@ -10,12 +10,32 @@ import com.haulmont.cuba.gui.components.validation.time.TimeConstraint;
 
 public class FutureValidator<T> extends AbstractValidator<T> {
 
+    protected boolean checkSeconds = false;
+
     public FutureValidator() {
-        this.errorMessage = messages.getMainMessage("validation.constraints.future");
+        this.defaultMessage = messages.getMainMessage("validation.constraints.future");
     }
 
     public FutureValidator(String errorMessage) {
-        this.errorMessage = errorMessage;
+        this.defaultMessage = errorMessage;
+    }
+
+    /**
+     * Set true if validator should also check seconds and nanos (if supported) in value. Default value is false.
+     *
+     * @param checkSeconds check seconds
+     * @return current instance
+     */
+    public FutureValidator<T> withCheckSeconds(boolean checkSeconds) {
+        this.checkSeconds = checkSeconds;
+        return this;
+    }
+
+    /**
+     * @return true if seconds and nanos are checked
+     */
+    public boolean isCheckSeconds() {
+        return checkSeconds;
     }
 
     @Override
@@ -31,7 +51,7 @@ public class FutureValidator<T> extends AbstractValidator<T> {
         }
 
         if (!timeConstraint.isFuture()) {
-            throw new ValidationException(getErrorMessage());
+            throw new ValidationException(getMessage());
         }
     }
 }
