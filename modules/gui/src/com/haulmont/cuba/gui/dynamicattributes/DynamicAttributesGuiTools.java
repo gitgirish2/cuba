@@ -44,7 +44,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -156,7 +156,7 @@ public class DynamicAttributesGuiTools {
         if (item.getDynamicAttributes() == null) {
             item.setDynamicAttributes(new HashMap<>());
         }
-        Date currentTimestamp = AppBeans.get(TimeSource.NAME, TimeSource.class).currentTimestamp();
+        ZonedDateTime currentTimestamp = AppBeans.get(TimeSource.NAME, TimeSource.class).now();
         boolean entityIsCategorized = item instanceof Categorized && ((Categorized) item).getCategory() != null;
 
         for (CategoryAttribute categoryAttribute : attributes) {
@@ -165,7 +165,7 @@ public class DynamicAttributesGuiTools {
     }
 
     protected void setDefaultAttributeValue(BaseGenericIdEntity item, CategoryAttribute categoryAttribute,
-                                   boolean entityIsCategorized, Date currentTimestamp) {
+                                   boolean entityIsCategorized, ZonedDateTime currentTimestamp) {
         String code = DynamicAttributesUtils.encodeAttributeCode(categoryAttribute.getCode());
         if (entityIsCategorized && !categoryAttribute.getCategory().equals(((Categorized) item).getCategory())) {
             item.setValue(code, null);//cleanup attributes from not dedicated category
@@ -194,9 +194,9 @@ public class DynamicAttributesGuiTools {
             }
         } else if (Boolean.TRUE.equals(categoryAttribute.getDefaultDateIsCurrent())) {
             if (PropertyType.DATE_WITHOUT_TIME.equals(categoryAttribute.getDataType())) {
-                item.setValue(code, LocalDate.now());
+                item.setValue(code, currentTimestamp.toLocalDate());
             } else {
-                item.setValue(code, currentTimestamp);
+                item.setValue(code, Date.from(currentTimestamp.toInstant()));
             }
         }
     }
