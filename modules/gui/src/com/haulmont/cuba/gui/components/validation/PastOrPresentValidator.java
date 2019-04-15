@@ -15,7 +15,7 @@ import java.util.Date;
 /**
  * Validates that date or time in the past or present.
  * <p>
- * Note, types that support TimeZones ca be found in {@link DateTimeTransformations#isDateTypeSupportsTimeZones(Class)}
+ * Note, types that support TimeZones can be found in {@link DateTimeTransformations#isDateTypeSupportsTimeZones(Class)}
  *
  * @param <T> {@link Date}, {@link LocalDate}, {@link LocalDateTime}, {@link LocalTime}, {@link OffsetDateTime},
  *            {@link OffsetTime}

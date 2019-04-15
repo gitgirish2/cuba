@@ -12,7 +12,7 @@ import com.haulmont.cuba.gui.components.validation.numbers.NumberConstraint;
 import static com.haulmont.cuba.gui.components.validation.ConstraintHelper.getNumberConstraint;
 
 /**
- * NEgative validator checks that value should be a strictly less than 0.
+ * Negative validator checks that value should be a strictly less than 0.
  * <p>
  * For error message it uses Groovy string and it is possible to use '$value' key for formatted output.
  *
@@ -27,7 +27,7 @@ public class NegativeValidator<T extends Number> extends AbstractValidator<T> {
     /**
      * Constructor for custom error message. This message can contain '$value' key for formatted output.
      * <p>
-     * Example: "Value '$value' should be greater than 0".
+     * Example: "Value '$value' should be less than 0".
      *
      * @param message error message
      */

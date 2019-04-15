@@ -188,62 +188,54 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
 
             Element maxElement = validators.element("max");
             if (maxElement != null) {
-                MaxValidator maxValidator = new MaxValidator<>();
-                loadValidatorMessage(maxValidator, maxElement);
-
                 String max = maxElement.attributeValue("value");
                 if (max != null) {
-                    int maxValue = Integer.parseInt(max);
-                    maxValidator.withMax(maxValue);
+                    long maxValue = Long.parseLong(max);
+                    MaxValidator maxValidator = new MaxValidator<>(maxValue);
+                    loadValidatorMessage(maxValidator, maxElement);
+                    component.addValidator(maxValidator);
                 }
-                component.addValidator(maxValidator);
             }
 
             Element minElement = validators.element("min");
             if (minElement != null) {
-                MinValidator minValidator = new MinValidator<>();
-                loadValidatorMessage(minValidator, minElement);
-
                 String min = minElement.attributeValue("value");
                 if (min != null) {
-                    int minValue = Integer.parseInt(min);
-                    minValidator.withMin(minValue);
+                    long minValue = Long.parseLong(min);
+                    MinValidator minValidator = new MinValidator<>(minValue);
+                    loadValidatorMessage(minValidator, minElement);
+                    component.addValidator(minValidator);
                 }
-                component.addValidator(minValidator);
             }
 
             Element decimalMinElement = validators.element("decimalMin");
             if (decimalMinElement != null) {
-                DecimalMinValidator decimalMinValidator = new DecimalMinValidator<>();
-                loadValidatorMessage(decimalMinValidator, decimalMinElement);
-
                 String decimalMin = decimalMinElement.attributeValue("value");
                 if (StringUtils.isNotBlank(decimalMin)) {
-                    decimalMinValidator.withMin(decimalMin);
-                }
+                    DecimalMinValidator decimalMinValidator = new DecimalMinValidator<>(decimalMin);
+                    loadValidatorMessage(decimalMinValidator, decimalMinElement);
 
-                String inclusive = decimalMinElement.attributeValue("inclusive");
-                if (StringUtils.isNotBlank(inclusive)) {
-                    decimalMinValidator.withInclusive(Boolean.parseBoolean(inclusive));
+                    String inclusive = decimalMinElement.attributeValue("inclusive");
+                    if (StringUtils.isNotBlank(inclusive)) {
+                        decimalMinValidator.withInclusive(Boolean.parseBoolean(inclusive));
+                    }
+                    component.addValidator(decimalMinValidator);
                 }
-                component.addValidator(decimalMinValidator);
             }
 
             Element decimalMaxElement = validators.element("decimalMax");
             if (decimalMaxElement != null) {
-                DecimalMaxValidator decimalMaxValidator = new DecimalMaxValidator<>();
-                loadValidatorMessage(decimalMaxValidator, decimalMaxElement);
-
                 String decimalMax = decimalMaxElement.attributeValue("value");
                 if (StringUtils.isNotBlank(decimalMax)) {
-                    decimalMaxValidator.withMax(decimalMax);
-                }
+                    DecimalMaxValidator decimalMaxValidator = new DecimalMaxValidator<>(decimalMax);
+                    loadValidatorMessage(decimalMaxValidator, decimalMaxElement);
 
-                String inclusive = decimalMaxElement.attributeValue("inclusive");
-                if (StringUtils.isNotBlank(inclusive)) {
-                    decimalMaxValidator.withInclusive(Boolean.parseBoolean(inclusive));
+                    String inclusive = decimalMaxElement.attributeValue("inclusive");
+                    if (StringUtils.isNotBlank(inclusive)) {
+                        decimalMaxValidator.withInclusive(Boolean.parseBoolean(inclusive));
+                    }
+                    component.addValidator(decimalMaxValidator);
                 }
-                component.addValidator(decimalMaxValidator);
             }
 
             Element digitsElement = validators.element("digits");

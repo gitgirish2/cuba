@@ -26,7 +26,7 @@ public final class ConstraintHelper {
         Class clazz = value.getClass();
         if (clazz.equals(Integer.class) || clazz.equals(BigInteger.class)) {
             return new BigIntegerConstraint(BigInteger.valueOf(value.longValue()));
-        } else if (clazz.equals(Long.class) && value.longValue() <= 0) {
+        } else if (clazz.equals(Long.class)) {
             return new LongConstraint(value.longValue());
         } else if (clazz.equals(BigDecimal.class)) {
             return new BigDecimalConstraint((BigDecimal) value);

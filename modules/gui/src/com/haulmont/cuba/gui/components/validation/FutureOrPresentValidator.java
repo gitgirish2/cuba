@@ -5,9 +5,21 @@
 
 package com.haulmont.cuba.gui.components.validation;
 
+import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.validation.time.TimeConstraint;
 
+import java.time.*;
+import java.util.Date;
+
+/**
+ * Validates that date or time in the future or present.
+ * <p>
+ * Note, types that support TimeZones can be found in {@link DateTimeTransformations#isDateTypeSupportsTimeZones(Class)}.
+ *
+ * @param <T> {@link Date}, {@link LocalDate}, {@link LocalDateTime}, {@link LocalTime}, {@link OffsetDateTime},
+ *            {@link OffsetTime}
+ */
 public class FutureOrPresentValidator<T> extends AbstractValidator<T> {
 
     protected boolean checkSeconds = false;
@@ -16,8 +28,13 @@ public class FutureOrPresentValidator<T> extends AbstractValidator<T> {
         this.defaultMessage = messages.getMainMessage("validation.constraints.futureOrPresent");
     }
 
-    public FutureOrPresentValidator(String errorMessage) {
-        this.defaultMessage = errorMessage;
+    /**
+     * Constructor for custom error message.
+     *
+     * @param message error message
+     */
+    public FutureOrPresentValidator(String message) {
+        this.message = message;
     }
 
     /**
@@ -52,7 +69,7 @@ public class FutureOrPresentValidator<T> extends AbstractValidator<T> {
 
         timeConstraint.setCheckSeconds(checkSeconds);
         if (!timeConstraint.isFutureOrPresent()) {
-            throw new ValidationException(getMessage());
+            throw new ValidationException(getErrorMessage());
         }
     }
 }

@@ -20,7 +20,7 @@ public class BigIntegerConstraint implements NumberConstraint {
 
     @Override
     public boolean isMax(long max) {
-        return compareValueWith(max) <= 1;
+        return compareValueWith(max) <= 0;
     }
 
     @Override
