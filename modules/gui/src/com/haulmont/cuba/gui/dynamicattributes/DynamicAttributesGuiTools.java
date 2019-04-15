@@ -38,6 +38,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -68,6 +69,9 @@ public class DynamicAttributesGuiTools {
 
     @Inject
     protected DataManager dataManager;
+
+    @Inject
+    protected Security security;
 
     /**
      * Enforce the datasource to change modified status if dynamic attribute is changed
@@ -212,7 +216,16 @@ public class DynamicAttributesGuiTools {
 
     protected boolean attributeShouldBeShownOnTheScreen(String screen, String component, CategoryAttribute attribute) {
         Set<String> targetScreensSet = attribute.targetScreensSet();
-        return targetScreensSet.contains(screen) || targetScreensSet.contains(screen + "#" + component);
+        return (targetScreensSet.contains(screen) || targetScreensSet.contains(screen + "#" + component))
+                && checkUserPermissionForAttribute(attribute);
+    }
+
+    protected boolean checkUserPermissionForAttribute(CategoryAttribute attribute) {
+        if (!attribute.getIsEntity()) {
+            return true;
+        }
+        MetaClass entityClass = metadata.getClass(attribute.getJavaClassForEntity());
+        return security.isEntityOpPermitted(entityClass, EntityOp.READ);
     }
 
     /**
