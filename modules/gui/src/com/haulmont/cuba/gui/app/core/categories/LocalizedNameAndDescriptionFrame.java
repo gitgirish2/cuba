@@ -21,14 +21,10 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.screen.UiController;
-import com.haulmont.cuba.gui.screen.UiDescriptor;
 
 import javax.inject.Inject;
 import java.util.*;
 
-@UiController("localizedNameAndDescriptionFrame")
-@UiDescriptor("localized-name-description-frame.xml")
 public class LocalizedNameAndDescriptionFrame extends AbstractFrame {
 
     private static final String MESSAGE_PACK = "msg://com.haulmont.cuba.core.entity/";
@@ -47,23 +43,34 @@ public class LocalizedNameAndDescriptionFrame extends AbstractFrame {
 
 
     protected Map<Locale, TextField> namesTextFieldMap = new HashMap<>();
-    protected Map<Locale, TextField> descriptionsTextFieldMap = new HashMap<>();
+    protected Map<Locale, TextArea> descriptionsTextFieldMap = new HashMap<>();
 
     @Override
     public void init(Map<String, Object> params) {
         Map<String, Locale> map = globalConfig.getAvailableLocales();
         for (Map.Entry<String, Locale> entry : map.entrySet()) {
             localesScrollBox.add(createLabelComponent(entry.getKey() + "|" + entry.getValue().toString()));
-            localesScrollBox.add(createLocaleListComponent(entry.getValue(),
+            localesScrollBox.add(createTextFieldComponent(entry.getValue(),
                     messageTools.loadString(MESSAGE_PACK + "CategoryAttribute.name"), namesTextFieldMap));
-            localesScrollBox.add(createLocaleListComponent(entry.getValue(),
+            localesScrollBox.add(createTextAreaComponent(entry.getValue(),
                     messageTools.loadString(MESSAGE_PACK + "CategoryAttribute.description"), descriptionsTextFieldMap));
         }
     }
 
-    protected Component createLocaleListComponent(Locale locale, String key, Map<Locale, TextField> textFieldMap) {
+    protected Component createTextFieldComponent(Locale locale, String key, Map<Locale, TextField> textFieldMap) {
         TextField valueField = uiComponents.create(TextField.TYPE_STRING);
         valueField.setWidth("100%");
+        valueField.setCaption(key);
+
+        textFieldMap.put(locale, valueField);
+
+        return valueField;
+    }
+
+    protected Component createTextAreaComponent(Locale locale, String key, Map<Locale, TextArea> textFieldMap) {
+        TextArea<String> valueField = uiComponents.create(TextArea.TYPE_STRING);
+        valueField.setWidth("100%");
+        valueField.setRows(3);
         valueField.setCaption(key);
 
         textFieldMap.put(locale, valueField);
@@ -86,15 +93,25 @@ public class LocalizedNameAndDescriptionFrame extends AbstractFrame {
         return getValue(descriptionsTextFieldMap);
     }
 
-    protected String getValue(Map<Locale, TextField> textFieldMap) {
+    protected String getValue(Map<Locale, ? extends TextInputField> textFieldMap) {
         Properties properties = new Properties();
-        for (Map.Entry<Locale, TextField> entry : textFieldMap.entrySet()) {
-            if (!entry.getValue().getRawValue().isEmpty()) {
-                properties.setProperty(entry.getKey().toString(), entry.getValue().getRawValue());
+        for (Map.Entry<Locale, ? extends TextInputField> entry : textFieldMap.entrySet()) {
+            if (!getTextInputFieldRawValue(entry.getValue()).isEmpty()) {
+                properties.setProperty(entry.getKey().toString(), getTextInputFieldRawValue(entry.getValue()));
             }
         }
 
         return LocaleHelper.convertPropertiesToString(properties);
+    }
+
+    protected String getTextInputFieldRawValue(TextInputField textInputField) {
+        if (textInputField instanceof TextField) {
+            return ((TextField) textInputField).getRawValue();
+        }
+        if (textInputField instanceof TextArea) {
+            return ((TextArea) textInputField).getRawValue();
+        }
+        return "";
     }
 
     public void setNamesValue(String localeBundle) {
@@ -105,13 +122,13 @@ public class LocalizedNameAndDescriptionFrame extends AbstractFrame {
         setValue(localeBundle, descriptionsTextFieldMap);
     }
 
-    protected void setValue(String localeBundle, Map<Locale, TextField> textFieldMap) {
+    protected void setValue(String localeBundle, Map<Locale, ? extends TextInputField> textFieldMap) {
         if (localeBundle == null || textFieldMap == null) {
             return;
         }
 
         Map<String, String> localizedNamesMap = LocaleHelper.getLocalizedValuesMap(localeBundle);
-        for (Map.Entry<Locale, TextField> textFieldEntry : textFieldMap.entrySet()) {
+        for (Map.Entry<Locale, ? extends TextInputField> textFieldEntry : textFieldMap.entrySet()) {
             String keyLocale = textFieldEntry.getKey().toString();
             textFieldEntry.getValue().setValue(localizedNamesMap.get(keyLocale));
         }

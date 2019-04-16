@@ -118,6 +118,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected LookupField<String> screenField;
     protected LookupField<String> entityTypeField;
     protected PickerField<Entity> defaultEntityField;
+    protected TextArea<String> descriptionField;
 
     protected String fieldWidth;
 
@@ -249,6 +250,15 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             dataTypeField.setDatasource(datasource, propertyId);
 
             return dataTypeField;
+        });
+
+        attributeFieldGroup.addCustomField("description", (datasource, propertyId) -> {
+            descriptionField = uiComponents.create(TextArea.TYPE_STRING);
+            descriptionField.setMaxLength(1000);
+            descriptionField.setRows(3);
+            descriptionField.setDatasource(datasource, propertyId);
+
+            return descriptionField;
         });
 
         attributeFieldGroup.addCustomField("screen", (datasource, propertyId) -> {
