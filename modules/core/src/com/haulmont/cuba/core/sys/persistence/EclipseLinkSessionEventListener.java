@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.sys.persistence;
 
 import com.google.common.base.Strings;
+import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
@@ -30,8 +31,8 @@ import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.CubaEnhanced;
 import com.haulmont.cuba.core.sys.UuidConverter;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.ClassUtils;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -73,7 +74,7 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
         setPrintInnerJoinOnClause(session);
 
         List<String> wrongFetchTypes = new ArrayList<>();
-        List<String> missingEnhancements = new ArrayList<>();
+        List<Pair<Class, String>> missingEnhancements = new ArrayList<>();
 
         Map<Class, ClassDescriptor> descriptorMap = session.getDescriptors();
         boolean hasMultipleTableConstraintDependency = hasMultipleTableConstraintDependency();
@@ -81,27 +82,7 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
             MetaClass metaClass = metadata.getSession().getClassNN(entry.getKey());
             ClassDescriptor desc = entry.getValue();
 
-            Class entityClass = entry.getKey();
-            boolean cubaEnhanced = ClassUtils.getAllInterfaces(entityClass).contains(CubaEnhanced.class);
-            boolean persistenceObject = ClassUtils.getAllInterfaces(entityClass).contains(PersistenceObject.class);
-            boolean persistenceWeaved = ClassUtils.getAllInterfaces(entityClass).contains(PersistenceWeaved.class);
-            boolean persistenceWeavedFetchGroups = ClassUtils.getAllInterfaces(entityClass).contains(PersistenceWeavedFetchGroups.class);
-            boolean persistenceWeavedChangeTracking = ClassUtils.getAllInterfaces(entityClass).contains(PersistenceWeavedChangeTracking.class);
-            if (!cubaEnhanced || !persistenceObject || !persistenceWeaved || !persistenceWeavedFetchGroups
-                    || !persistenceWeavedChangeTracking) {
-                String message = String.format("Entity class %s is missing some of enhancing interfaces:%s%s%s%s%s",
-                        entityClass.getSimpleName(),
-                        cubaEnhanced ? "" : " CubaEnhanced;",
-                        persistenceObject ? "" : " PersistenceObject;",
-                        persistenceWeaved ? "" : " PersistenceWeaved;",
-                        persistenceWeavedFetchGroups ? "" : " PersistenceWeavedFetchGroups;",
-                        persistenceWeavedChangeTracking ? "" : " PersistenceWeavedChangeTracking;");
-                if (Boolean.valueOf(AppContext.getProperty("cuba.disableEntityNotEnhancedException"))) {
-                    missingEnhancements.add(message);
-                } else {
-                    throw new EntityNotEnhancedException(message);
-                }
-            }
+            enhancementCheck(entry.getKey(), missingEnhancements);
 
             setCacheable(metaClass, desc, session);
 
@@ -126,20 +107,7 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
             for (DatabaseMapping mapping : mappings) {
 
                 //Fetch type check
-                if ((mapping.isOneToOneMapping() || mapping.isOneToManyMapping()
-                        || mapping.isManyToOneMapping() || mapping.isManyToManyMapping())) {
-                    if (!mapping.isLazy()) {
-                        mapping.setIsLazy(true);
-                        wrongFetchTypes.add(String.format("EAGER fetch type detected for reference field %s of entity %s; Set to LAZY",
-                                mapping.getAttributeName(), entityClass.getSimpleName()));
-                    }
-                } else {
-                    if (mapping.isLazy()) {
-                        mapping.setIsLazy(false);
-                        wrongFetchTypes.add(String.format("LAZY fetch type detected for basic field %s of entity %s; Set to EAGER",
-                                mapping.getAttributeName(), entityClass.getSimpleName()));
-                    }
-                }
+                fetchTypeCheck(mapping, entry.getKey(), wrongFetchTypes);
 
                 // support UUID
                 String attributeName = mapping.getAttributeName();
@@ -195,6 +163,46 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
                 }
             }
         }
+        logCheckResult(wrongFetchTypes, missingEnhancements);
+    }
+
+    protected void enhancementCheck(Class entityClass, List<Pair<Class, String>> missingEnhancements) {
+        boolean cubaEnhanced = ArrayUtils.contains(entityClass.getInterfaces(), CubaEnhanced.class);
+        boolean persistenceObject = ArrayUtils.contains(entityClass.getInterfaces(), PersistenceObject.class);
+        boolean persistenceWeaved = ArrayUtils.contains(entityClass.getInterfaces(), PersistenceWeaved.class);
+        boolean persistenceWeavedFetchGroups = ArrayUtils.contains(entityClass.getInterfaces(), PersistenceWeavedFetchGroups.class);
+        boolean persistenceWeavedChangeTracking = ArrayUtils.contains(entityClass.getInterfaces(), PersistenceWeavedChangeTracking.class);
+        if (!cubaEnhanced || !persistenceObject || !persistenceWeaved || !persistenceWeavedFetchGroups
+                || !persistenceWeavedChangeTracking) {
+            String message = String.format("Entity class %s is missing some of enhancing interfaces:%s%s%s%s%s",
+                    entityClass.getSimpleName(),
+                    cubaEnhanced ? "" : " CubaEnhanced;",
+                    persistenceObject ? "" : " PersistenceObject;",
+                    persistenceWeaved ? "" : " PersistenceWeaved;",
+                    persistenceWeavedFetchGroups ? "" : " PersistenceWeavedFetchGroups;",
+                    persistenceWeavedChangeTracking ? "" : " PersistenceWeavedChangeTracking;");
+            missingEnhancements.add(new Pair<>(entityClass, message));
+        }
+    }
+
+    protected void fetchTypeCheck(DatabaseMapping mapping, Class entityClass, List<String> wrongFetchTypes) {
+        if ((mapping.isOneToOneMapping() || mapping.isOneToManyMapping()
+                || mapping.isManyToOneMapping() || mapping.isManyToManyMapping())) {
+            if (!mapping.isLazy()) {
+                mapping.setIsLazy(true);
+                wrongFetchTypes.add(String.format("EAGER fetch type detected for reference field %s of entity %s; Set to LAZY",
+                        mapping.getAttributeName(), entityClass.getSimpleName()));
+            }
+        } else {
+            if (mapping.isLazy()) {
+                mapping.setIsLazy(false);
+                wrongFetchTypes.add(String.format("LAZY fetch type detected for basic field %s of entity %s; Set to EAGER",
+                        mapping.getAttributeName(), entityClass.getSimpleName()));
+            }
+        }
+    }
+
+    protected void logCheckResult(List<String> wrongFetchTypes, List<Pair<Class, String>> missingEnhancements) {
         if (!wrongFetchTypes.isEmpty()) {
             StringBuilder message = new StringBuilder();
             message.append("\n=================================================================");
@@ -210,12 +218,20 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
             StringBuilder message = new StringBuilder();
             message.append("\n=================================================================");
             message.append("\nProblems with entity enhancement detected:");
-            for (String me : missingEnhancements) {
+            for (Pair me : missingEnhancements) {
                 message.append("\n");
-                message.append(me);
+                message.append(me.getSecond());
             }
             message.append("\n=================================================================");
-            log.warn(message.toString());
+            log.error(message.toString());
+            if (!Boolean.valueOf(AppContext.getProperty("cuba.disableEnhancementChecks"))) {
+                StringBuilder exceptionMessage = new StringBuilder();
+                for (Pair me : missingEnhancements) {
+                    exceptionMessage.append(me.getFirst());
+                    exceptionMessage.append("; ");
+                }
+                throw new EntityNotEnhancedException(exceptionMessage.toString());
+            }
         }
     }
 
