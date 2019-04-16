@@ -27,15 +27,27 @@ import static com.haulmont.cuba.gui.meta.PropertyType.*;
 @SuppressWarnings("unused")
 public class SimpleMetaBlueprint {
 
+    @StudioProperties(properties = {
+            @StudioProperty(id = "css", category = "CSS", type = CSS_BLOCK)
+    })
     private interface BComponent {
         @StudioProperty(type = CSS_CLASSNAME_LIST)
-        String setStylename(String stylename);
+        void setStylename(String stylename);
 
         @StudioProperty(type = SIZE, category = "Size")
-        String setWidth();
+        void setWidth(String width);
 
         @StudioProperty(type = SIZE, category = "Size")
-        String setHeight();
+        void setHeight(String height);
+
+        @StudioProperty(type = LOCALIZED_STRING, category = "Misc")
+        void setContextHelpText(String contextHelpText);
+
+        @StudioProperty(type = LOCALIZED_STRING)
+        void setDescription(String description);
+
+        @Min(-1)
+        void setTabIndex(int tabIndex);
     }
 
     @StudioComponent(caption = "TextField", category = "Input")

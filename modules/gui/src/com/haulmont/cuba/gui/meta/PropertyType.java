@@ -42,6 +42,11 @@ public enum PropertyType {
     COLLECTION_CONTAINER_REF,
     PROPERTY_REF,
     PROPERTY_PATH_REF,
+    DATATYPE_ID,
+
+    DATE,
+    DATE_TIME,
+    TIME,
 
     PARTS
 
