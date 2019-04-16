@@ -220,10 +220,18 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
      * @return custom hints which can be used later during query construction
      */
     public Map<String, Object> getDbHints() {
+        return dbHints == null ? Collections.emptyMap() : Collections.unmodifiableMap(dbHints);
+    }
+
+    /**
+     * Sets custom hint that can be used later during query construction
+     */
+    public LoadContext<E> setDbHint(String hintName, Object value) {
         if (dbHints == null) {
             dbHints = new HashMap<>();
         }
-        return dbHints;
+        dbHints.put(hintName, value);
+        return this;
     }
 
     /**
