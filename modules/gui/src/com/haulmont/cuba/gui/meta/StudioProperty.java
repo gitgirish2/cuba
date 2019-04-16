@@ -33,9 +33,16 @@ public @interface StudioProperty {
 
     boolean required() default false;
 
+    String defaultValue() default "";
+
     PropertyType type() default PropertyType.PRIMITIVE;
 
     String xmlAttribute() default "";
 
     String xmlElement() default "";
+
+    /**
+     * todo path to custom designer script
+     */
+    String designer() default "";
 }

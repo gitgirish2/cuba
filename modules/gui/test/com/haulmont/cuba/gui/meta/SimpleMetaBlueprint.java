@@ -34,10 +34,10 @@ public class SimpleMetaBlueprint {
         @StudioProperty(type = CSS_CLASSNAME_LIST)
         void setStylename(String stylename);
 
-        @StudioProperty(type = SIZE, category = "Size")
+        @StudioProperty(type = SIZE, category = "Size", defaultValue = "auto")
         void setWidth(String width);
 
-        @StudioProperty(type = SIZE, category = "Size")
+        @StudioProperty(type = SIZE, category = "Size", defaultValue = "auto")
         void setHeight(String height);
 
         @StudioProperty(type = LOCALIZED_STRING, category = "Misc")
@@ -48,6 +48,11 @@ public class SimpleMetaBlueprint {
 
         @Min(-1)
         void setTabIndex(int tabIndex);
+    }
+
+    @StudioComponent(defaultProperty = "value")
+    private interface BLabel {
+
     }
 
     @StudioComponent(caption = "TextField", category = "Input")
@@ -69,10 +74,17 @@ public class SimpleMetaBlueprint {
         void setRows(int rows);
     }
 
-    private interface BLayout {
-
+    private interface BLayout extends BComponent {
         @StudioEvent
         Subscription addLayoutClickListener(LayoutClickNotifier.LayoutClickEvent event);
+    }
+
+    @StudioComponent(defaultEvent = "layoutClick")
+    @StudioProperties(properties = {
+            @StudioProperty(id = "width", defaultValue = "100%")
+    })
+    private interface BVerticalLayout extends BLayout {
+
     }
 
     @StudioComponent(caption = "GridLayout", tag = "grid", category = "Layout")

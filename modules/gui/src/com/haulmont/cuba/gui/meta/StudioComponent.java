@@ -33,4 +33,15 @@ public @interface StudioComponent {
     String icon() default "";
 
     String tag() default "";
+
+    String defaultProperty() default "";
+
+    String defaultEvent() default "";
+
+    /**
+     * JavaDoc
+     *
+     * todo extension point that can embed custom shortcuts to properties panel
+     */
+    String designer() default "";
 }
