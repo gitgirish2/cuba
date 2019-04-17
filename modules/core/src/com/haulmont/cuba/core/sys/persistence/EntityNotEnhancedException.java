@@ -17,15 +17,8 @@
 package com.haulmont.cuba.core.sys.persistence;
 
 public class EntityNotEnhancedException extends RuntimeException {
-    public EntityNotEnhancedException() {
-        super();
-    }
 
     public EntityNotEnhancedException(String message) {
         super(message);
-    }
-
-    public EntityNotEnhancedException(String message, Throwable cause) {
-        super(message, cause);
     }
 }
