@@ -444,6 +444,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
                         .filter(cav -> cav.getChildValues() != null)
                         .forEach(cav -> {
                             List<Object> value = cav.getChildValues().stream()
+                                    .filter(c -> c.getDeleteTs() == null)
                                     .map(CategoryAttributeValue::getValue)
                                     .collect(Collectors.toList());
                             cav.setTransientCollectionValue(value);
