@@ -310,11 +310,14 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         //remove existing child CategoryAttributeValues that are not in the CategoryAttributeValue.collectionValue property
         if (categoryAttributeValue.getChildValues() != null) {
             for (CategoryAttributeValue existingChildCategoryAttributeValue : categoryAttributeValue.getChildValues()) {
-                Object value = existingChildCategoryAttributeValue.getValue();
-                if (!collectionValue.contains(value)) {
-                    em.remove(existingChildCategoryAttributeValue);
+                boolean isChildDeleted = existingChildCategoryAttributeValue.getDeleteTs() != null;
+                if (!isChildDeleted) {
+                    Object value = existingChildCategoryAttributeValue.getValue();
+                    if (!collectionValue.contains(value)) {
+                        em.remove(existingChildCategoryAttributeValue);
+                    }
+                    newCollectionValue.remove(value);
                 }
-                newCollectionValue.remove(value);
             }
         }
 
