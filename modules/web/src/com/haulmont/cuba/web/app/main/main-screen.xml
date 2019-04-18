@@ -52,12 +52,14 @@
                     <newWindowButton id="newWindowButton"
                                      description="mainMsg://newWindowBtnDescription"
                                      icon="app/images/new-window.png"/>
-                    <logoutButton id="logoutButton"
+                    <userActionsButton/>
+                    <!--<logoutButton id="logoutButton"
                                   description="mainMsg://logoutBtnDescription"
                                   icon="app/images/exit.png"/>
                     <loginButton id="loginButton"
                                  description="mainMsg://loginBtnDescription"
-                                 icon="SIGN_IN"/>
+                                 icon="SIGN_IN"/>-->
+
                 </hbox>
                 <timeZoneIndicator id="timeZoneIndicator"
                                    align="MIDDLE_CENTER"/>

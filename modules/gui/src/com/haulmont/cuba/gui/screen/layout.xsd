@@ -3087,6 +3087,12 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <xs:complexType name="userActionsButton">
+        <xs:complexContent>
+            <xs:extension base="baseMainElement"/>
+        </xs:complexContent>
+    </xs:complexType>
+
     <xs:complexType name="logoutButtonComponent">
         <xs:complexContent>
             <xs:extension base="baseMainElement"/>
@@ -3192,6 +3198,7 @@
 
                 <!-- Main window -->
 
+                <xs:element name="userActionsButton" type="userActionsButton"/>
                 <xs:element name="logoutButton" type="logoutButtonComponent"/>
                 <xs:element name="loginButton" type="loginButtomComponent"/>
                 <xs:element name="newWindowButton" type="newWindowButtonComponent"/>
