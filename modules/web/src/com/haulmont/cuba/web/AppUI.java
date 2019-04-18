@@ -498,6 +498,10 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
                         && ((ClientUserSession) session).isAuthenticated()) {
                     userSessionService.getUserSession(session.getId());
 
+                    if (hasAuthenticatedSession()
+                            && !Objects.equals(currentSession, session)) {
+                        setCurrentSession(session);
+                    }
                 }
             } catch (Exception e) {
                 sessionIsAlive = false;

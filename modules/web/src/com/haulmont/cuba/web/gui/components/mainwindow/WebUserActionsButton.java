@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.gui.Screens;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.mainwindow.UserActionsButton;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
@@ -40,6 +40,7 @@ public class WebUserActionsButton extends WebAbstractComponent<CubaMenuBar>
 
     public WebUserActionsButton() {
         component = new CubaMenuBar();
+        component.addStyleName(USERACTIONS_BUTTON_STYLENAME);
     }
 
     @Override
@@ -48,22 +49,23 @@ public class WebUserActionsButton extends WebAbstractComponent<CubaMenuBar>
 
         IconResolver iconResolver = beanLocator.get(IconResolver.class);
         Icons icons = beanLocator.get(Icons.class);
+        Messages messages = beanLocator.get(Messages.class);
 
         MenuBar.MenuItem loginButton = component.addItem("", item -> login());
+        loginButton.setDescription(messages.getMainMessage("loginBtnDescription"));
         loginButton.setIcon(iconResolver.getIconResource(icons.get(CubaIcon.SIGN_IN)));
         loginButton.setVisible(!authenticated);
 
-        MenuBar.MenuItem logoutButton = component.addItem("");
-        logoutButton.setIcon(iconResolver.getIconResource(icons.get(CubaIcon.SIGN_OUT)));
-        logoutButton.setVisible(authenticated);
+        MenuBar.MenuItem userMenuBtn = component.addItem("");
+        userMenuBtn.setDescription(messages.getMainMessage("userActionsBtnDescription"));
+        userMenuBtn.setIcon(iconResolver.getIconResource(icons.get(CubaIcon.USER)));
+        userMenuBtn.setVisible(authenticated);
 
-        logoutButton.addItem("Settings", selectedItem -> {
-            Screen settingsScreen = AppUI.getCurrent().getScreens()
-                    .create("settings", OpenMode.NEW_TAB);
+        userMenuBtn.addItem(messages.getMainMessage("settings"),
+                iconResolver.getIconResource(icons.get(CubaIcon.GEAR)), item -> openSettings());
 
-            settingsScreen.show();
-        });
-        logoutButton.addItem("Logout", selectedItem -> logout());
+        userMenuBtn.addItem(messages.getMainMessage("logoutBtnDescription"),
+                iconResolver.getIconResource(icons.get(CubaIcon.SIGN_OUT)), item -> logout());
     }
 
     protected void login() {
@@ -87,6 +89,13 @@ public class WebUserActionsButton extends WebAbstractComponent<CubaMenuBar>
             throw new IllegalStateException("Logout button is not attached to UI");
         }
         ui.getApp().logout();
+    }
+
+    protected void openSettings() {
+        Screen settingsScreen = AppUI.getCurrent().getScreens()
+                .create("settings", OpenMode.NEW_TAB);
+
+        settingsScreen.show();
     }
 
     @Override
