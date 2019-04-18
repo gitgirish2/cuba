@@ -16,24 +16,19 @@
 
 package com.haulmont.cuba.gui.app.core.categories;
 
-import com.haulmont.cuba.core.entity.LocaleHelper;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
 
 import javax.inject.Inject;
 import java.util.*;
 
-public class LocalizedNameAndDescriptionFrame extends AbstractFrame {
+public class LocalizedNameAndDescriptionFrame extends AbstractLocalizedTextFieldsFrame {
 
     private static final String MESSAGE_PACK = "msg://com.haulmont.cuba.core.entity/";
 
     @Inject
     protected ScrollBoxLayout localesScrollBox;
-
-    @Inject
-    protected UiComponents uiComponents;
 
     @Inject
     protected GlobalConfig globalConfig;
@@ -57,34 +52,6 @@ public class LocalizedNameAndDescriptionFrame extends AbstractFrame {
         }
     }
 
-    protected Component createTextFieldComponent(Locale locale, String key, Map<Locale, TextField> textFieldMap) {
-        TextField valueField = uiComponents.create(TextField.TYPE_STRING);
-        valueField.setWidth("100%");
-        valueField.setCaption(key);
-
-        textFieldMap.put(locale, valueField);
-
-        return valueField;
-    }
-
-    protected Component createTextAreaComponent(Locale locale, String key, Map<Locale, TextArea> textFieldMap) {
-        TextArea<String> valueField = uiComponents.create(TextArea.TYPE_STRING);
-        valueField.setWidth("100%");
-        valueField.setRows(3);
-        valueField.setCaption(key);
-
-        textFieldMap.put(locale, valueField);
-
-        return valueField;
-    }
-
-    protected Component createLabelComponent(String labelText) {
-        Label<String> label = uiComponents.create(Label.TYPE_STRING);
-        label.setValue(labelText);
-        label.setWidth("100%");
-        return label;
-    }
-
     public String getNamesValue() {
         return getValue(namesTextFieldMap);
     }
@@ -93,44 +60,11 @@ public class LocalizedNameAndDescriptionFrame extends AbstractFrame {
         return getValue(descriptionsTextFieldMap);
     }
 
-    protected String getValue(Map<Locale, ? extends TextInputField> textFieldMap) {
-        Properties properties = new Properties();
-        for (Map.Entry<Locale, ? extends TextInputField> entry : textFieldMap.entrySet()) {
-            if (!getTextInputFieldRawValue(entry.getValue()).isEmpty()) {
-                properties.setProperty(entry.getKey().toString(), getTextInputFieldRawValue(entry.getValue()));
-            }
-        }
-
-        return LocaleHelper.convertPropertiesToString(properties);
-    }
-
-    protected String getTextInputFieldRawValue(TextInputField textInputField) {
-        if (textInputField instanceof TextField) {
-            return ((TextField) textInputField).getRawValue();
-        }
-        if (textInputField instanceof TextArea) {
-            return ((TextArea) textInputField).getRawValue();
-        }
-        return "";
-    }
-
     public void setNamesValue(String localeBundle) {
         setValue(localeBundle, namesTextFieldMap);
     }
 
     public void setDescriptionsValue(String localeBundle) {
         setValue(localeBundle, descriptionsTextFieldMap);
-    }
-
-    protected void setValue(String localeBundle, Map<Locale, ? extends TextInputField> textFieldMap) {
-        if (localeBundle == null || textFieldMap == null) {
-            return;
-        }
-
-        Map<String, String> localizedNamesMap = LocaleHelper.getLocalizedValuesMap(localeBundle);
-        for (Map.Entry<Locale, ? extends TextInputField> textFieldEntry : textFieldMap.entrySet()) {
-            String keyLocale = textFieldEntry.getKey().toString();
-            textFieldEntry.getValue().setValue(localizedNamesMap.get(keyLocale));
-        }
     }
 }
