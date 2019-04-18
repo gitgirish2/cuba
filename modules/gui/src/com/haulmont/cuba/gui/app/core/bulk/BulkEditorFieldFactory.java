@@ -46,7 +46,7 @@ public class BulkEditorFieldFactory {
     public Field createField(Datasource datasource, MetaProperty property) {
         if (DynamicAttributesUtils.isDynamicAttribute(property)) {
             CategoryAttribute attribute = DynamicAttributesUtils.getCategoryAttribute(property);
-            if (attribute.getDataType().equals(PropertyType.ENUMERATION)) {
+            if (attribute.getDataType().equals(PropertyType.ENUMERATION) && !attribute.getIsCollection()) {
                 return createEnumField(datasource, property);
             } else if (attribute.getIsCollection()) {
                 return createListEditorField(datasource, property);

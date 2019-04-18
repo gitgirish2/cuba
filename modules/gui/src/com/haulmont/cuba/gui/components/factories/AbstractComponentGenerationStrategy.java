@@ -78,7 +78,8 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
             MetaProperty metaProperty = mpp.getMetaProperty();
             if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
                 CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
-                if (categoryAttribute != null && categoryAttribute.getDataType() == PropertyType.ENUMERATION) {
+                if (categoryAttribute != null && categoryAttribute.getDataType() == PropertyType.ENUMERATION
+                    && !categoryAttribute.getIsCollection()) {
                     return createEnumField(context);
                 }
             }

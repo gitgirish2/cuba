@@ -299,7 +299,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                         column.setMaxTextLength(clientConfig.getDynamicAttributesTableColumnMaxTextLength());
                     }
 
-                    if (attribute.getDataType().equals(PropertyType.ENUMERATION)) {
+                    if (attribute.getDataType().equals(PropertyType.ENUMERATION) && !attribute.getIsCollection()) {
                         column.setFormatter(value ->
                                 LocaleHelper.getEnumLocalizedValue((String) value, attribute.getEnumerationLocales())
                         );
