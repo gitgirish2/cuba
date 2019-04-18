@@ -598,8 +598,7 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
 
     .c-ftsfield-button,
     .c-newwindow-button,
-    .c-logout-button,
-    .c-login-button{
+    .c-logout-button {
       color: valo-font-color($bg, 0.5);
 
       &:hover {
@@ -618,7 +617,6 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
 
     .v-button.c-ftsfield-button,
     .v-button.c-logout-button,
-    .v-button.c-login-button,
     .v-button.c-newwindow-button {
       height: $v-unit-size;
       padding: ceil($v-unit-size/10) ceil($v-unit-size/5);

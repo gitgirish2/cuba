@@ -60,7 +60,6 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
         initFtsField();
         initUserIndicator();
         initLogoutButton();
-        initLoginButton();
         initTitleBar();
         initMenu();
         initLayoutAnalyzerContextMenu();
@@ -79,14 +78,6 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
         if (logoutButton != null) {
             boolean authenticated = App.getInstance().getConnection().isAuthenticated();
             logoutButton.setVisible(authenticated);
-        }
-    }
-
-    protected void initLoginButton() {
-        LoginButton loginButton = getLoginButton();
-        if (loginButton != null) {
-            boolean authenticated = App.getInstance().getConnection().isAuthenticated();
-            loginButton.setVisible(!authenticated);
         }
     }
 
@@ -205,10 +196,5 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
     @Nullable
     protected LogoutButton getLogoutButton() {
         return (LogoutButton) getWindow().getComponent("logoutButton");
-    }
-
-    @Nullable
-    protected LoginButton getLoginButton() {
-        return (LoginButton) getWindow().getComponent("loginButton");
     }
 }
