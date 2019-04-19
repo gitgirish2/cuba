@@ -6,6 +6,7 @@
 package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.cuba.gui.components.ValidationException;
+import org.dom4j.Element;
 
 /**
  * NotNull validator checks that value is not null.
@@ -14,8 +15,9 @@ import com.haulmont.cuba.gui.components.ValidationException;
  */
 public class NotNullValidator<T> extends AbstractValidator<T> {
 
+    protected String defaultMessage = messages.getMainMessage("validation.constraints.notNull");
+
     public NotNullValidator() {
-        this.defaultMessage = messages.getMainMessage("validation.constraints.notNull");
     }
 
     /**
@@ -25,6 +27,20 @@ public class NotNullValidator<T> extends AbstractValidator<T> {
      */
     public NotNullValidator(String message) {
         this.message = message;
+    }
+
+    /**
+     * @param element     notNull element
+     * @param messagePack message pack
+     */
+    public NotNullValidator(Element element, String messagePack) {
+        this.messagePack = messagePack;
+        this.message = loadMessage(element);
+    }
+
+    @Override
+    public String getDefaultMessage() {
+        return defaultMessage;
     }
 
     @Override

@@ -6,18 +6,20 @@
 package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.components.validation.numbers.NumberConstraint;
+import com.haulmont.cuba.gui.components.validation.numbers.NumberValidator;
+import org.dom4j.Element;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Locale;
 
-import static com.haulmont.cuba.gui.components.validation.ConstraintHelper.getNumberConstraint;
+import static com.haulmont.cuba.gui.components.validation.ValidatorHelper.getNumberConstraint;
 
 /**
  * Digits validator checks that value must be a number within accepted range.
@@ -34,6 +36,8 @@ public class DigitsValidator<T> extends AbstractValidator<T> {
     protected int integer;
     protected int fraction;
 
+    protected String defaultMessage = messages.getMainMessage("validation.constraints.digits");
+
     /**
      * Constructor with default error message.
      *
@@ -43,7 +47,6 @@ public class DigitsValidator<T> extends AbstractValidator<T> {
     public DigitsValidator(int integer, int fraction) {
         this.integer = integer;
         this.fraction = fraction;
-        this.defaultMessage = messages.getMainMessage("validation.constraints.digits");
     }
 
     /**
@@ -64,9 +67,26 @@ public class DigitsValidator<T> extends AbstractValidator<T> {
     }
 
     /**
-     * Sets maximum number of integral digits.
+     * @param element     'digits' element
+     * @param messagePack message pack
+     */
+    public DigitsValidator(Element element, String messagePack) {
+        this.messagePack = messagePack;
+        this.message = loadMessage(element);
+
+        String integer = element.attributeValue("integer");
+        Preconditions.checkNotNullArgument(integer);
+        this.integer = Integer.parseInt(integer);
+
+        String fraction = element.attributeValue("fraction");
+        Preconditions.checkNotNullArgument(fraction);
+        this.fraction = Integer.parseInt(fraction);
+    }
+
+    /**
+     * Sets maximum value inclusive.
      *
-     * @param integer integer value
+     * @param integer maximum number of integral digits
      * @return current instance
      */
     public DigitsValidator<T> withIntger(int integer) {
@@ -75,9 +95,9 @@ public class DigitsValidator<T> extends AbstractValidator<T> {
     }
 
     /**
-     * Sets maximum number of fractional digits.
+     * Sets maximum value inclusive.
      *
-     * @param fraction fraction value
+     * @param fraction maximum number of fractional digits
      * @return current instance
      */
     public DigitsValidator<T> withFraction(int fraction) {
@@ -100,13 +120,18 @@ public class DigitsValidator<T> extends AbstractValidator<T> {
     }
 
     @Override
+    public String getDefaultMessage() {
+        return defaultMessage;
+    }
+
+    @Override
     public void accept(T value) throws ValidationException {
         // consider null value is valid
         if (value == null) {
             return;
         }
 
-        NumberConstraint constraint = null;
+        NumberValidator constraint = null;
 
         if (value instanceof Number) {
             constraint = getNumberConstraint((Number) value);

@@ -7,11 +7,11 @@ package com.haulmont.cuba.gui.components.validation.numbers;
 
 import java.math.BigDecimal;
 
-public class FloatConstraint implements NumberConstraint {
+public class FloatValidator implements NumberValidator {
 
     protected Float value;
 
-    public FloatConstraint(Float value) {
+    public FloatValidator(Float value) {
         this.value = value;
     }
 

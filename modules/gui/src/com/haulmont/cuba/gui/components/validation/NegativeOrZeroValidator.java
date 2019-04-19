@@ -7,9 +7,10 @@ package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.components.validation.numbers.NumberConstraint;
+import com.haulmont.cuba.gui.components.validation.numbers.NumberValidator;
+import org.dom4j.Element;
 
-import static com.haulmont.cuba.gui.components.validation.ConstraintHelper.getNumberConstraint;
+import static com.haulmont.cuba.gui.components.validation.ValidatorHelper.getNumberConstraint;
 
 /**
  * NegativeOrZero validator checks that value should be a less than or equal 0.
@@ -20,8 +21,9 @@ import static com.haulmont.cuba.gui.components.validation.ConstraintHelper.getNu
  */
 public class NegativeOrZeroValidator<T extends Number> extends AbstractValidator<T> {
 
+    protected String defaultMessage = messages.getMainMessage("validation.constraints.negativeOrZero");
+
     public NegativeOrZeroValidator() {
-        this.defaultMessage = messages.getMainMessage("validation.constraints.negativeOrZero");
     }
 
     /**
@@ -35,6 +37,20 @@ public class NegativeOrZeroValidator<T extends Number> extends AbstractValidator
         this.message = message;
     }
 
+    /**
+     * @param element     negativeOrZero element
+     * @param messagePack message pack
+     */
+    public NegativeOrZeroValidator(Element element, String messagePack) {
+        this.messagePack = messagePack;
+        this.message = loadMessage(element);
+    }
+
+    @Override
+    public String getDefaultMessage() {
+        return defaultMessage;
+    }
+
     @Override
     public void accept(T value) throws ValidationException {
         // consider null value is valid
@@ -42,7 +58,7 @@ public class NegativeOrZeroValidator<T extends Number> extends AbstractValidator
             return;
         }
 
-        NumberConstraint constraint = getNumberConstraint(value);
+        NumberValidator constraint = getNumberConstraint(value);
         if (constraint == null) {
             throw new IllegalArgumentException("NegativeOrZeroValidator doesn't support following type: '" + value.getClass() + "'");
         }

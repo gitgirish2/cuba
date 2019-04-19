@@ -6,10 +6,12 @@
 package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.components.validation.numbers.NumberConstraint;
+import com.haulmont.cuba.gui.components.validation.numbers.NumberValidator;
+import org.dom4j.Element;
 
-import static com.haulmont.cuba.gui.components.validation.ConstraintHelper.getNumberConstraint;
+import static com.haulmont.cuba.gui.components.validation.ValidatorHelper.getNumberConstraint;
 
 /**
  * Min validator checks that value must be greater or equal to the specified minimum.
@@ -22,9 +24,10 @@ public class MinValidator<T extends Number> extends AbstractValidator<T> {
 
     protected long min;
 
+    protected String defaultMessage = messages.getMainMessage("validation.constraints.min");
+
     public MinValidator(long min) {
         this.min = min;
-        this.defaultMessage = messages.getMainMessage("validation.constraints.min");
     }
 
     /**
@@ -41,6 +44,19 @@ public class MinValidator<T extends Number> extends AbstractValidator<T> {
     }
 
     /**
+     * @param element     'min' element
+     * @param messagePack message pack
+     */
+    public MinValidator(Element element, String messagePack) {
+        this.messagePack = messagePack;
+        this.message = loadMessage(element);
+
+        String min = element.attributeValue("value");
+        Preconditions.checkNotNullArgument(min);
+        this.min = Long.parseLong(min);
+    }
+
+    /**
      * Sets min value.
      *
      * @param min min value
@@ -49,6 +65,11 @@ public class MinValidator<T extends Number> extends AbstractValidator<T> {
     public MinValidator<T> withMin(long min) {
         this.min = min;
         return this;
+    }
+
+    @Override
+    public String getDefaultMessage() {
+        return defaultMessage;
     }
 
     /**
@@ -65,7 +86,7 @@ public class MinValidator<T extends Number> extends AbstractValidator<T> {
             return;
         }
 
-        NumberConstraint constraint = getNumberConstraint(value);
+        NumberValidator constraint = getNumberConstraint(value);
         if (constraint == null
                 || value instanceof Double
                 || value instanceof Float) {

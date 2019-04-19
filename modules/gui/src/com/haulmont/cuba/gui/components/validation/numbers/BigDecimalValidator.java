@@ -6,16 +6,13 @@
 package com.haulmont.cuba.gui.components.validation.numbers;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
-public class BigIntegerConstraint implements NumberConstraint {
+public class BigDecimalValidator implements NumberValidator {
 
-    protected BigInteger value;
-    protected BigDecimal bigDecimalValue;
+    protected BigDecimal value;
 
-    public BigIntegerConstraint(BigInteger value) {
+    public BigDecimalValidator(BigDecimal value) {
         this.value = value;
-        this.bigDecimalValue = new BigDecimal(value);
     }
 
     @Override
@@ -30,7 +27,7 @@ public class BigIntegerConstraint implements NumberConstraint {
 
     @Override
     public boolean isDigits(int integer, int fraction) {
-        BigDecimal bigDecimal = new BigDecimal(value).stripTrailingZeros();
+        BigDecimal bigDecimal = value.stripTrailingZeros();
 
         int integerLength = bigDecimal.precision() - bigDecimal.scale();
         int fractionLength = bigDecimal.scale() < 0 ? 0 : bigDecimal.scale();
@@ -77,10 +74,10 @@ public class BigIntegerConstraint implements NumberConstraint {
     }
 
     protected int compareValueWith(long val) {
-        return value.compareTo(BigInteger.valueOf(val));
+        return this.value.compareTo(BigDecimal.valueOf(val));
     }
 
-    protected int compareValueWith(BigDecimal val) {
-        return bigDecimalValue.compareTo(val);
+    private int compareValueWith(BigDecimal val) {
+        return this.value.compareTo(val);
     }
 }

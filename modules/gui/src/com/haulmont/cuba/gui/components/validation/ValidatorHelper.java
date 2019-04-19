@@ -6,8 +6,8 @@
 package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.cuba.gui.components.validation.numbers.*;
-import com.haulmont.cuba.gui.components.validation.time.AbstractTimeConstraint.*;
-import com.haulmont.cuba.gui.components.validation.time.TimeConstraint;
+import com.haulmont.cuba.gui.components.validation.time.AbstractTimeValidator.*;
+import com.haulmont.cuba.gui.components.validation.time.TimeValidator;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
@@ -15,31 +15,31 @@ import java.math.BigInteger;
 import java.time.*;
 import java.util.Date;
 
-public final class ConstraintHelper {
+public final class ValidatorHelper {
 
     @Nullable
-    public static NumberConstraint getNumberConstraint(Number value) {
+    public static NumberValidator getNumberConstraint(Number value) {
         if (value == null) {
             return null;
         }
 
         Class clazz = value.getClass();
         if (clazz.equals(Integer.class) || clazz.equals(BigInteger.class)) {
-            return new BigIntegerConstraint(BigInteger.valueOf(value.longValue()));
+            return new BigIntegerValidator(BigInteger.valueOf(value.longValue()));
         } else if (clazz.equals(Long.class)) {
-            return new LongConstraint(value.longValue());
+            return new LongValidator(value.longValue());
         } else if (clazz.equals(BigDecimal.class)) {
-            return new BigDecimalConstraint((BigDecimal) value);
+            return new BigDecimalValidator((BigDecimal) value);
         } else if (clazz.equals(Double.class)) {
-            return new DoubleConstraint(value.doubleValue());
+            return new DoubleValidator(value.doubleValue());
         } else if (clazz.equals(Float.class)) {
-            return new FloatConstraint(value.floatValue());
+            return new FloatValidator(value.floatValue());
         }
         return null;
     }
 
     @Nullable
-    public static <T> TimeConstraint getTimeConstraint(T value) {
+    public static <T> TimeValidator getTimeConstraint(T value) {
         if (value == null) {
             return null;
         }

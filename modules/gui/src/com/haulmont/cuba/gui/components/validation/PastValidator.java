@@ -7,7 +7,8 @@ package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.components.validation.time.TimeConstraint;
+import com.haulmont.cuba.gui.components.validation.time.TimeValidator;
+import org.dom4j.Element;
 
 import java.time.*;
 import java.util.Date;
@@ -24,8 +25,9 @@ public class PastValidator<T> extends AbstractValidator<T> {
 
     protected boolean checkSeconds = false;
 
+    protected String defaultMessage = messages.getMainMessage("validation.constraints.past");
+
     public PastValidator() {
-        this.defaultMessage = messages.getMainMessage("validation.constraints.past");
     }
 
     /**
@@ -35,6 +37,20 @@ public class PastValidator<T> extends AbstractValidator<T> {
      */
     public PastValidator(String message) {
         this.message = message;
+    }
+
+    /**
+     * @param element 'past' element
+     * @param messagePack message pack
+     */
+    public PastValidator(Element element, String messagePack) {
+        this.messagePack = messagePack;
+        this.message = loadMessage(element);
+
+        String checkSeconds = element.attributeValue("checkSeconds");
+        if (checkSeconds != null) {
+            this.checkSeconds = Boolean.parseBoolean(checkSeconds);
+        }
     }
 
     /**
@@ -56,13 +72,18 @@ public class PastValidator<T> extends AbstractValidator<T> {
     }
 
     @Override
+    public String getDefaultMessage() {
+        return defaultMessage;
+    }
+
+    @Override
     public void accept(T value) throws ValidationException {
         // consider null value is valid
         if (value == null) {
             return;
         }
 
-        TimeConstraint timeConstraint = ConstraintHelper.getTimeConstraint(value);
+        TimeValidator timeConstraint = ValidatorHelper.getTimeConstraint(value);
         if (timeConstraint == null) {
             throw new IllegalArgumentException("PastValidator doesn't support following type: '" + value.getClass() + "'");
         }

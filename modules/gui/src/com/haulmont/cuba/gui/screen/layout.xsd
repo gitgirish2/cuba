@@ -1204,7 +1204,7 @@
     <xs:complexType name="dateValidatorType">
         <xs:complexContent>
             <xs:extension base="messageValidatorType">
-                <xs:attribute name="includeSeconds" type="xs:boolean"/>
+                <xs:attribute name="checkSeconds" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

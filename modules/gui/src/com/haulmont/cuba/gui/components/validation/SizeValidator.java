@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.gui.components.ValidationException;
+import org.dom4j.Element;
 
 import java.util.Collection;
 
@@ -24,8 +25,9 @@ public class SizeValidator<T> extends AbstractValidator<T> {
     protected int min;
     protected int max = Integer.MAX_VALUE;
 
+    protected String defaultMessage = messages.getMainMessage("validation.constraints.sizeRange");
+
     public SizeValidator() {
-        this.defaultMessage = messages.getMainMessage("validation.constraints.sizeRange");
     }
 
     /**
@@ -40,6 +42,24 @@ public class SizeValidator<T> extends AbstractValidator<T> {
      */
     public SizeValidator(String message) {
         this.message = message;
+    }
+
+    /**
+     * @param element     size element
+     * @param messagePack message pack
+     */
+    public SizeValidator(Element element, String messagePack) {
+        this.messagePack = messagePack;
+        this.message = loadMessage(element);
+
+        String min = element.attributeValue("min");
+        if (min != null) {
+            this.min = Integer.parseInt(min);
+        }
+        String max = element.attributeValue("max");
+        if (max != null) {
+            this.max = Integer.parseInt(max);
+        }
     }
 
     /**
@@ -107,6 +127,11 @@ public class SizeValidator<T> extends AbstractValidator<T> {
         this.min = min;
         this.max = max;
         return this;
+    }
+
+    @Override
+    public String getDefaultMessage() {
+        return defaultMessage;
     }
 
     @Override

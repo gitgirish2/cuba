@@ -46,8 +46,13 @@ public interface Field<V> extends DatasourceComponent<V>, HasValueSource<V>, Com
      * {@link ValidationException} this exception must be thrown by the validator if the value is not valid.
      */
     void addValidator(Consumer<? super V> validator);
-    void addValidators(Consumer<? super V>... validators);
     void removeValidator(Consumer<V> validator);
+
+    default void addValidators(Consumer<? super V>... validators) {
+        for (Consumer<? super V> validator : validators) {
+            addValidator(validator);
+        }
+    }
 
     /**
      * @return unmodifiable collection with Field validators

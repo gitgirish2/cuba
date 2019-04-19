@@ -6,18 +6,20 @@
 package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.components.validation.numbers.NumberConstraint;
+import com.haulmont.cuba.gui.components.validation.numbers.NumberValidator;
+import org.dom4j.Element;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Locale;
 
-import static com.haulmont.cuba.gui.components.validation.ConstraintHelper.getNumberConstraint;
+import static com.haulmont.cuba.gui.components.validation.ValidatorHelper.getNumberConstraint;
 
 /**
  * DecimalMax validator checks that value must be less than or equal to the specified maximum.
@@ -33,6 +35,8 @@ public class DecimalMaxValidator<T> extends AbstractValidator<T> {
     protected BigDecimal max;
     protected boolean inclusive = true;
 
+    protected String defaultMessage = messages.getMainMessage("validation.constraints.decimalMaxInclusive");
+
     /**
      * Constructor with default error message.
      *
@@ -40,7 +44,6 @@ public class DecimalMaxValidator<T> extends AbstractValidator<T> {
      */
     public DecimalMaxValidator(String max) {
         this.max = new BigDecimal(max);
-        this.defaultMessage = messages.getMainMessage("validation.constraints.decimalMax");
     }
 
     /**
@@ -54,6 +57,26 @@ public class DecimalMaxValidator<T> extends AbstractValidator<T> {
     public DecimalMaxValidator(String max, String message) {
         this.max = new BigDecimal(max);
         this.message = message;
+    }
+
+    /**
+     * @param element     decimalMax element
+     * @param messagePack message pack
+     */
+    public DecimalMaxValidator(Element element, String messagePack) {
+        this.messagePack = messagePack;
+        this.message = loadMessage(element);
+
+        String max = element.attributeValue("value");
+        Preconditions.checkNotNullArgument(max);
+        this.max = new BigDecimal(max);
+
+        String inclusive = element.attributeValue("inclusive");
+        if (inclusive != null) {
+            this.inclusive = Boolean.parseBoolean(inclusive);
+        }
+
+        setDefaultMessageInclusive(this.inclusive);
     }
 
     /**
@@ -85,7 +108,7 @@ public class DecimalMaxValidator<T> extends AbstractValidator<T> {
         this.max = new BigDecimal(max);
         this.inclusive = inclusive;
 
-        setDefaultMessage(inclusive);
+        setDefaultMessageInclusive(inclusive);
 
         return this;
     }
@@ -99,7 +122,7 @@ public class DecimalMaxValidator<T> extends AbstractValidator<T> {
     public DecimalMaxValidator<T> withInclusive(boolean inclusive) {
         this.inclusive = inclusive;
 
-        setDefaultMessage(inclusive);
+        setDefaultMessageInclusive(inclusive);
 
         return this;
     }
@@ -112,13 +135,18 @@ public class DecimalMaxValidator<T> extends AbstractValidator<T> {
     }
 
     @Override
+    public String getDefaultMessage() {
+        return defaultMessage;
+    }
+
+    @Override
     public void accept(T value) throws ValidationException {
         // consider null value is valid
         if (value == null) {
             return;
         }
 
-        NumberConstraint constraint = null;
+        NumberValidator constraint = null;
 
         if (value instanceof Number) {
             constraint = getNumberConstraint((Number) value);
@@ -147,11 +175,11 @@ public class DecimalMaxValidator<T> extends AbstractValidator<T> {
         }
     }
 
-    protected void setDefaultMessage(boolean inclusive) {
+    protected void setDefaultMessageInclusive(boolean inclusive) {
         if (inclusive) {
-            this.defaultMessage = messages.getMainMessage("validation.constraints.decimalMaxInclusive");
+            defaultMessage = messages.getMainMessage("validation.constraints.decimalMaxInclusive");
         } else {
-            this.defaultMessage = messages.getMainMessage("validation.constraints.decimalMax");
+            defaultMessage = messages.getMainMessage("validation.constraints.decimalMax");
         }
     }
 }

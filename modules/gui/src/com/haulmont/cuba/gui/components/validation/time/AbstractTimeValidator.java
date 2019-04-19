@@ -14,14 +14,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class AbstractTimeConstraint<T> implements TimeConstraint {
+public abstract class AbstractTimeValidator<T> implements TimeValidator {
 
     protected TimeSource timeSource = AppBeans.get(TimeSource.NAME);
     protected T value;
 
     protected boolean checkSeconds;
 
-    protected static Map<Class, TimeConstraint> constraints = new HashMap<>(5);
+    protected static Map<Class, TimeValidator> constraints = new HashMap<>(5);
 
     @Override
     public boolean isPast() {
@@ -50,7 +50,7 @@ public abstract class AbstractTimeConstraint<T> implements TimeConstraint {
 
     public abstract int compareValueWithCurrent();
 
-    public static class DateConstraint extends AbstractTimeConstraint<Date> {
+    public static class DateConstraint extends AbstractTimeValidator<Date> {
 
         public DateConstraint(Date value) {
             this.value = value;
@@ -78,7 +78,7 @@ public abstract class AbstractTimeConstraint<T> implements TimeConstraint {
         }
     }
 
-    public static class LocalDateConstraint extends AbstractTimeConstraint<LocalDate> {
+    public static class LocalDateConstraint extends AbstractTimeValidator<LocalDate> {
 
         public LocalDateConstraint(LocalDate value) {
             this.value = value;
@@ -91,7 +91,7 @@ public abstract class AbstractTimeConstraint<T> implements TimeConstraint {
         }
     }
 
-    public static class LocalDateTimeConstraint extends AbstractTimeConstraint<LocalDateTime> {
+    public static class LocalDateTimeConstraint extends AbstractTimeValidator<LocalDateTime> {
 
         public LocalDateTimeConstraint(LocalDateTime value) {
             this.value = value;
@@ -114,7 +114,7 @@ public abstract class AbstractTimeConstraint<T> implements TimeConstraint {
         }
     }
 
-    public static class LocalTimeConstraint extends AbstractTimeConstraint<LocalTime> {
+    public static class LocalTimeConstraint extends AbstractTimeValidator<LocalTime> {
 
         public LocalTimeConstraint(LocalTime value) {
             this.value = value;
@@ -137,7 +137,7 @@ public abstract class AbstractTimeConstraint<T> implements TimeConstraint {
         }
     }
 
-    public static class OffsetTimeConstraint extends AbstractTimeConstraint<OffsetTime> {
+    public static class OffsetTimeConstraint extends AbstractTimeValidator<OffsetTime> {
 
         public OffsetTimeConstraint(OffsetTime value) {
             this.value = value;
@@ -160,7 +160,7 @@ public abstract class AbstractTimeConstraint<T> implements TimeConstraint {
         }
     }
 
-    public static class OffsetDateTimeConstraint extends AbstractTimeConstraint<OffsetDateTime> {
+    public static class OffsetDateTimeConstraint extends AbstractTimeValidator<OffsetDateTime> {
 
         public OffsetDateTimeConstraint(OffsetDateTime value) {
             this.value = value;

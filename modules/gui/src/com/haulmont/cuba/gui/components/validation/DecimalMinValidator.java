@@ -6,18 +6,20 @@
 package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.components.validation.numbers.NumberConstraint;
+import com.haulmont.cuba.gui.components.validation.numbers.NumberValidator;
+import org.dom4j.Element;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Locale;
 
-import static com.haulmont.cuba.gui.components.validation.ConstraintHelper.getNumberConstraint;
+import static com.haulmont.cuba.gui.components.validation.ValidatorHelper.getNumberConstraint;
 
 /**
  * DecimalMin validator checks that value must be greater than or equal to the specified minimum.
@@ -33,6 +35,8 @@ public class DecimalMinValidator<T> extends AbstractValidator<T> {
     protected BigDecimal min;
     protected boolean inclusive = true;
 
+    protected String defaultMessage = messages.getMainMessage("validation.constraints.decimalMinInclusive");
+
     /**
      * Constructor with default error message.
      *
@@ -40,7 +44,6 @@ public class DecimalMinValidator<T> extends AbstractValidator<T> {
      */
     public DecimalMinValidator(String min) {
         this.min = new BigDecimal(min);
-        this.defaultMessage = messages.getMainMessage("validation.constraints.decimalMinInclusive");
     }
 
     /**
@@ -54,6 +57,26 @@ public class DecimalMinValidator<T> extends AbstractValidator<T> {
     public DecimalMinValidator(String min, String message) {
         this.min = new BigDecimal(min);
         this.message = message;
+    }
+
+    /**
+     * @param element     decimalMin element
+     * @param messagePack message pack
+     */
+    public DecimalMinValidator(Element element, String messagePack) {
+        this.messagePack = messagePack;
+        this.message = loadMessage(element);
+
+        String min = element.attributeValue("value");
+        Preconditions.checkNotNullArgument(min);
+        this.min = new BigDecimal(min);
+
+        String inclusive = element.attributeValue("inclusive");
+        if (inclusive != null) {
+            this.inclusive = Boolean.parseBoolean(inclusive);
+        }
+
+        setDefaultMessageInclusive(this.inclusive);
     }
 
     /**
@@ -85,7 +108,7 @@ public class DecimalMinValidator<T> extends AbstractValidator<T> {
         this.min = new BigDecimal(min);
         this.inclusive = inclusive;
 
-        setDefaultMessage(inclusive);
+        setDefaultMessageInclusive(inclusive);
 
         return this;
     }
@@ -99,7 +122,7 @@ public class DecimalMinValidator<T> extends AbstractValidator<T> {
     public DecimalMinValidator<T> withInclusive(boolean inclusive) {
         this.inclusive = inclusive;
 
-        setDefaultMessage(inclusive);
+        setDefaultMessageInclusive(inclusive);
 
         return this;
     }
@@ -112,13 +135,18 @@ public class DecimalMinValidator<T> extends AbstractValidator<T> {
     }
 
     @Override
+    public String getDefaultMessage() {
+        return defaultMessage;
+    }
+
+    @Override
     public void accept(T value) throws ValidationException {
         // consider null value is valid
         if (value == null) {
             return;
         }
 
-        NumberConstraint constraint = null;
+        NumberValidator constraint = null;
 
         if (value instanceof Number) {
             constraint = getNumberConstraint((Number) value);
@@ -147,11 +175,11 @@ public class DecimalMinValidator<T> extends AbstractValidator<T> {
         }
     }
 
-    protected void setDefaultMessage(boolean inclusive) {
+    protected void setDefaultMessageInclusive(boolean inclusive) {
         if (inclusive) {
-            this.defaultMessage = messages.getMainMessage("validation.constraints.decimalMinInclusive");
+            defaultMessage = messages.getMainMessage("validation.constraints.decimalMinInclusive");
         } else {
-            this.defaultMessage = messages.getMainMessage("validation.constraints.decimalMin");
+            defaultMessage = messages.getMainMessage("validation.constraints.decimalMin");
         }
     }
 }

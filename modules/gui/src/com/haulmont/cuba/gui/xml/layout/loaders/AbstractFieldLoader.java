@@ -16,10 +16,8 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.google.common.base.Strings;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Buffered;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.HasDatatype;
@@ -28,9 +26,36 @@ import com.haulmont.cuba.gui.components.validators.EmailValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
 
 public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatasourceComponentLoader<T> {
+
+    protected static final Map<String, BiFunction<Element, String, AbstractValidator>> validatorsMap;
+
+    static {
+        validatorsMap = new HashMap<>(17);
+        validatorsMap.put("notNull", NotNullValidator::new);
+        validatorsMap.put("notEmpty", NotEmptyValidator::new);
+        validatorsMap.put("notBlank", NotBlankValidator::new);
+        validatorsMap.put("regexp", RegexpValidator::new);
+        validatorsMap.put("size", SizeValidator::new);
+        validatorsMap.put("negativeOrZero", NegativeOrZeroValidator::new);
+        validatorsMap.put("negative", NegativeValidator::new);
+        validatorsMap.put("positiveOrZero", PositiveOrZeroValidator::new);
+        validatorsMap.put("positive", PositiveValidator::new);
+        validatorsMap.put("max", MaxValidator::new);
+        validatorsMap.put("min", MinValidator::new);
+        validatorsMap.put("decimalMin", DecimalMinValidator::new);
+        validatorsMap.put("decimalMax", DecimalMaxValidator::new);
+        validatorsMap.put("digits", DigitsValidator::new);
+        validatorsMap.put("past", PastValidator::new);
+        validatorsMap.put("pastOrPresent", PastOrPresentValidator::new);
+        validatorsMap.put("future", FutureValidator::new);
+        validatorsMap.put("futureOrPresent", FutureOrPresentValidator::new);
+    }
 
     @Override
     public void loadComponent() {
@@ -77,6 +102,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void loadValidators(Field component, Element element) {
         List<Element> validatorElements = element.elements("validator");
 
@@ -99,220 +125,18 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
 
     @SuppressWarnings("unchecked")
     protected void loadConstraintValidators(Field component, Element element) {
-        Element validators = element.element("validators");
-        if (validators != null) {
-            Element notEmptyElement = validators.element("notEmpty");
-            if (notEmptyElement != null) {
-                NotEmptyValidator notEmptyValidator = new NotEmptyValidator();
-                loadValidatorMessage(notEmptyValidator, notEmptyElement);
-                component.addValidator(notEmptyValidator);
-            }
+        Element validatorsHolder = element.element("validators");
+        if (validatorsHolder != null) {
+            List<Element> validators = validatorsHolder.elements();
 
-            Element notBlankElement = validators.element("notBlank");
-            if (notBlankElement != null) {
-                NotBlankValidator notBlankValidator = new NotBlankValidator();
-                loadValidatorMessage(notBlankValidator, notBlankElement);
-                component.addValidator(notBlankValidator);
-            }
-
-            Element regexpElement = validators.element("regexp");
-            if (regexpElement != null) {
-                String regexp = regexpElement.attributeValue("regexp");
-                RegexpValidator regexpValidator = new RegexpValidator(regexp);
-                loadValidatorMessage(regexpValidator, regexpElement);
-                component.addValidator(regexpValidator);
-            }
-
-            Element sizeElement = validators.element("size");
-            if (sizeElement != null) {
-                SizeValidator sizeValidator = new SizeValidator();
-
-                String min = sizeElement.attributeValue("min");
-                if (min != null) {
-                    int minValue = Integer.parseInt(min);
-                    if (minValue < 0) {
-                        throw new GuiDevelopmentException("Min value must be greater or equal to 0",
-                                context.getFullFrameId());
-                    }
-                    sizeValidator.withMin(minValue);
-                }
-
-                String max = sizeElement.attributeValue("max");
-                if (max != null) {
-                    int maxValue = Integer.parseInt(max);
-                    if (maxValue < 0) {
-                        throw new GuiDevelopmentException("Max value must be greater or equal to 0",
-                                context.getFullFrameId());
-                    }
-                    sizeValidator.withMax(maxValue);
-                }
-
-                loadValidatorMessage(sizeValidator, sizeElement);
-                component.addValidator(sizeValidator);
-            }
-
-            Element mustBeNotNullElement = validators.element("notNull");
-            if (mustBeNotNullElement != null) {
-                NotNullValidator notNullValidator = new NotNullValidator<>();
-                loadValidatorMessage(notNullValidator, mustBeNotNullElement);
-                component.addValidator(notNullValidator);
-            }
-
-            Element negativeOrZeroElement = validators.element("negativeOrZero");
-            if (negativeOrZeroElement != null) {
-                NegativeOrZeroValidator negativeOrZeroValidator = new NegativeOrZeroValidator<>();
-                loadValidatorMessage(negativeOrZeroValidator, negativeOrZeroElement);
-                component.addValidator(negativeOrZeroValidator);
-            }
-
-            Element negativeElement = validators.element("negative");
-            if (negativeElement != null) {
-                NegativeValidator negativeValidator = new NegativeValidator<>();
-                loadValidatorMessage(negativeValidator, negativeElement);
-                component.addValidator(negativeValidator);
-            }
-
-            Element positiveOrZeroElement = validators.element("positiveOrZero");
-            if (positiveOrZeroElement != null) {
-                PositiveOrZeroValidator positiveOrZeroValidator = new PositiveOrZeroValidator<>();
-                loadValidatorMessage(positiveOrZeroValidator, positiveOrZeroElement);
-                component.addValidator(positiveOrZeroValidator);
-            }
-
-            Element positiveElement = validators.element("positive");
-            if (positiveElement != null) {
-                PositiveValidator positiveValidator = new PositiveValidator<>();
-                loadValidatorMessage(positiveValidator, positiveElement);
-                component.addValidator(positiveValidator);
-            }
-
-            Element maxElement = validators.element("max");
-            if (maxElement != null) {
-                String max = maxElement.attributeValue("value");
-                if (max != null) {
-                    long maxValue = Long.parseLong(max);
-                    MaxValidator maxValidator = new MaxValidator<>(maxValue);
-                    loadValidatorMessage(maxValidator, maxElement);
-                    component.addValidator(maxValidator);
+            for (Element validator : validators) {
+                BiFunction<Element, String, AbstractValidator> validatorLoader = validatorsMap.get(validator.getName());
+                if (validatorLoader != null) {
+                    component.addValidator(validatorLoader.apply(element, getMessagesPack()));
+                } else if (validator.getName().equals("email")) {
+                    component.addValidator(new EmailValidator(validator, getMessagesPack()));
                 }
             }
-
-            Element minElement = validators.element("min");
-            if (minElement != null) {
-                String min = minElement.attributeValue("value");
-                if (min != null) {
-                    long minValue = Long.parseLong(min);
-                    MinValidator minValidator = new MinValidator<>(minValue);
-                    loadValidatorMessage(minValidator, minElement);
-                    component.addValidator(minValidator);
-                }
-            }
-
-            Element decimalMinElement = validators.element("decimalMin");
-            if (decimalMinElement != null) {
-                String decimalMin = decimalMinElement.attributeValue("value");
-                if (StringUtils.isNotBlank(decimalMin)) {
-                    DecimalMinValidator decimalMinValidator = new DecimalMinValidator<>(decimalMin);
-                    loadValidatorMessage(decimalMinValidator, decimalMinElement);
-
-                    String inclusive = decimalMinElement.attributeValue("inclusive");
-                    if (StringUtils.isNotBlank(inclusive)) {
-                        decimalMinValidator.withInclusive(Boolean.parseBoolean(inclusive));
-                    }
-                    component.addValidator(decimalMinValidator);
-                }
-            }
-
-            Element decimalMaxElement = validators.element("decimalMax");
-            if (decimalMaxElement != null) {
-                String decimalMax = decimalMaxElement.attributeValue("value");
-                if (StringUtils.isNotBlank(decimalMax)) {
-                    DecimalMaxValidator decimalMaxValidator = new DecimalMaxValidator<>(decimalMax);
-                    loadValidatorMessage(decimalMaxValidator, decimalMaxElement);
-
-                    String inclusive = decimalMaxElement.attributeValue("inclusive");
-                    if (StringUtils.isNotBlank(inclusive)) {
-                        decimalMaxValidator.withInclusive(Boolean.parseBoolean(inclusive));
-                    }
-                    component.addValidator(decimalMaxValidator);
-                }
-            }
-
-            Element digitsElement = validators.element("digits");
-            if (digitsElement != null) {
-                DigitsValidator digitsValidator;
-
-                String integer = digitsElement.attributeValue("integer");
-                String fraction = digitsElement.attributeValue("fraction");
-                if (StringUtils.isNotBlank(integer) || StringUtils.isNotBlank(fraction)) {
-                    digitsValidator = new DigitsValidator<>(Integer.parseInt(integer), Integer.parseInt(fraction));
-                } else {
-                    throw new GuiDevelopmentException("'integer' and 'fraction' properties are required", context.getFullFrameId());
-                }
-
-                loadValidatorMessage(digitsValidator, digitsElement);
-                component.addValidator(digitsValidator);
-            }
-
-            Element pastElement = validators.element("past");
-            if (pastElement != null) {
-                PastValidator pastValidator = new PastValidator();
-                String includeSeconds = pastElement.attributeValue("includeSeconds");
-                if (StringUtils.isNotBlank(includeSeconds)) {
-                    pastValidator.withCheckSeconds(Boolean.parseBoolean(includeSeconds));
-                }
-
-                loadValidatorMessage(pastValidator, pastElement);
-                component.addValidator(pastValidator);
-            }
-
-            Element pastOrPresentElement = validators.element("pastOrPresent");
-            if (pastOrPresentElement != null) {
-                PastOrPresentValidator pastOrPresentValidator = new PastOrPresentValidator();
-                String includeSeconds = pastOrPresentElement.attributeValue("includeSeconds");
-                if (StringUtils.isNotBlank(includeSeconds)) {
-                    pastOrPresentValidator.withCheckSeconds(Boolean.parseBoolean(includeSeconds));
-                }
-
-                loadValidatorMessage(pastOrPresentValidator, pastOrPresentElement);
-                component.addValidator(pastOrPresentValidator);
-            }
-
-            Element futureElement = validators.element("future");
-            if (futureElement != null) {
-                FutureValidator futureValidator = new FutureValidator();
-                String includeSeconds = futureElement.attributeValue("includeSeconds");
-                if (StringUtils.isNotBlank(includeSeconds)) {
-                    futureValidator.withCheckSeconds(Boolean.parseBoolean(includeSeconds));
-                }
-
-                loadValidatorMessage(futureValidator, futureElement);
-                component.addValidator(futureValidator);
-            }
-
-            Element futureOrPresentElement = validators.element("futureOrPresent");
-            if (futureOrPresentElement != null) {
-                FutureOrPresentValidator futureOrPresentValidator = new FutureOrPresentValidator();
-                String includeSeconds = futureOrPresentElement.attributeValue("includeSeconds");
-                if (StringUtils.isNotBlank(includeSeconds)) {
-                    futureOrPresentValidator.withCheckSeconds(Boolean.parseBoolean(includeSeconds));
-                }
-
-                loadValidatorMessage(futureOrPresentValidator, futureOrPresentElement);
-                component.addValidator(futureOrPresentValidator);
-            }
-
-            Element emailElement = validators.element("email");
-            if (emailElement != null) {
-                component.addValidator(new EmailValidator(emailElement, getMessagesPack()));
-            }
-        }
-    }
-
-    protected void loadValidatorMessage(AbstractValidator validator, Element element) {
-        String message = element.attributeValue("message");
-        if (message != null) {
-            validator.setMessage(loadResourceString(message));
         }
     }
 

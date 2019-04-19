@@ -9,7 +9,9 @@ import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import groovy.text.GStringTemplateEngine;
+import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
@@ -25,7 +27,7 @@ public abstract class AbstractValidator<T> implements Consumer<T> {
     protected Messages messages = AppBeans.get(Messages.NAME);
     protected GStringTemplateEngine engine = new GStringTemplateEngine();
 
-    protected String defaultMessage;
+    protected String messagePack;
     protected String message;
 
     /**
@@ -46,10 +48,22 @@ public abstract class AbstractValidator<T> implements Consumer<T> {
         this.message = message;
     }
 
+    /**
+     * @return default error message which is used if custom message is not defined
+     */
+    public abstract String getDefaultMessage();
+
+    /**
+     * @return default message if custom is not defined
+     */
     protected String getErrorMessage() {
-        return Strings.isNullOrEmpty(message) ? defaultMessage : message;
+        return Strings.isNullOrEmpty(message) ? getDefaultMessage() : message;
     }
 
+    /**
+     * @param values values map
+     * @return message with inserted values
+     */
     protected String getTemplateErrorMessage(Map<String, Object> values) {
         String errorMessage = getErrorMessage();
 
@@ -63,5 +77,16 @@ public abstract class AbstractValidator<T> implements Consumer<T> {
             }
         }
         return errorMessage;
+    }
+
+    @Nullable
+    protected String loadMessage(Element element) {
+        String message = element.attributeValue("message");
+        if (!Strings.isNullOrEmpty(message)) {
+
+            return !Strings.isNullOrEmpty(messagePack) ?
+                    messages.getTools().loadString(messagePack, message) : message;
+        }
+        return null;
     }
 }

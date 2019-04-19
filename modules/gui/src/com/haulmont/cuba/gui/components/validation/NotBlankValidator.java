@@ -6,14 +6,16 @@
 package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.cuba.gui.components.ValidationException;
+import org.dom4j.Element;
 
 /**
  * NotBlank validator checks that value contains at least one non-whitespace character.
  */
 public class NotBlankValidator extends AbstractValidator<String> {
 
+    protected String defaultMessage = messages.getMainMessage("validation.constraints.notBlank");
+
     public NotBlankValidator() {
-        this.defaultMessage = messages.getMainMessage("validation.constraints.notBlank");
     }
 
     /**
@@ -23,6 +25,20 @@ public class NotBlankValidator extends AbstractValidator<String> {
      */
     public NotBlankValidator(String message) {
         this.message = message;
+    }
+
+    /**
+     * @param element     notEmpty element
+     * @param messagePack message pack
+     */
+    public NotBlankValidator(Element element, String messagePack) {
+        this.messagePack = messagePack;
+        this.message = loadMessage(element);
+    }
+
+    @Override
+    public String getDefaultMessage() {
+        return defaultMessage;
     }
 
     @Override

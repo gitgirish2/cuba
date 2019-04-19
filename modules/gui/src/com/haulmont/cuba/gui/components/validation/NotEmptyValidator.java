@@ -6,6 +6,7 @@
 package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.cuba.gui.components.ValidationException;
+import org.dom4j.Element;
 
 import java.util.Collection;
 
@@ -20,8 +21,9 @@ import java.util.Collection;
  */
 public class NotEmptyValidator<T> extends AbstractValidator<T> {
 
+    protected String defaultMessage = messages.getMainMessage("validation.constraints.notEmpty");
+
     public NotEmptyValidator() {
-        this.defaultMessage = messages.getMainMessage("validation.constraints.notEmpty");
     }
 
     /**
@@ -31,6 +33,20 @@ public class NotEmptyValidator<T> extends AbstractValidator<T> {
      */
     public NotEmptyValidator(String message) {
         this.message = message;
+    }
+
+    /**
+     * @param element     notEmpty element
+     * @param messagePack message pack
+     */
+    public NotEmptyValidator(Element element, String messagePack) {
+        this.messagePack = messagePack;
+        this.message = loadMessage(element);
+    }
+
+    @Override
+    public String getDefaultMessage() {
+        return defaultMessage;
     }
 
     @Override

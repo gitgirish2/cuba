@@ -5,9 +5,10 @@
 
 package com.haulmont.cuba.gui.components.validation;
 
-import com.google.common.base.Preconditions;
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.components.ValidationException;
+import org.dom4j.Element;
 
 import java.util.regex.Pattern;
 
@@ -23,11 +24,12 @@ import java.util.regex.Pattern;
 public class RegexpValidator extends AbstractValidator<String> {
 
     protected Pattern pattern;
+    protected String defaultMessage = messages.getMainMessage("validation.constraints.regexp");
+
 
     public RegexpValidator(String regexp) {
-        Preconditions.checkNotNull(regexp);
+        Preconditions.checkNotNullArgument(regexp);
 
-        this.defaultMessage = messages.getMainMessage("validation.constraints.regexp");
         this.pattern = Pattern.compile(regexp);
     }
 
@@ -39,10 +41,28 @@ public class RegexpValidator extends AbstractValidator<String> {
      * @param message error message
      */
     public RegexpValidator(String regexp, String message) {
-        Preconditions.checkNotNull(regexp);
+        Preconditions.checkNotNullArgument(regexp);
 
         this.message = message;
         this.pattern = Pattern.compile(regexp);
+    }
+
+    /**
+     * @param element     regexp element
+     * @param messagePack message pack
+     */
+    public RegexpValidator(Element element, String messagePack) {
+        this.messagePack = messagePack;
+        this.message = loadMessage(element);
+
+        String regexp = element.attributeValue("regexp");
+        Preconditions.checkNotNullArgument(regexp);
+        this.pattern = Pattern.compile(regexp);
+    }
+
+    @Override
+    public String getDefaultMessage() {
+        return defaultMessage;
     }
 
     @Override

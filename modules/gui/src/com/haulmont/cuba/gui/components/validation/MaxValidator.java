@@ -6,10 +6,12 @@
 package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.components.validation.numbers.NumberConstraint;
+import com.haulmont.cuba.gui.components.validation.numbers.NumberValidator;
+import org.dom4j.Element;
 
-import static com.haulmont.cuba.gui.components.validation.ConstraintHelper.getNumberConstraint;
+import static com.haulmont.cuba.gui.components.validation.ValidatorHelper.getNumberConstraint;
 
 /**
  * Max validator checks that value must be less than or equal to the specified maximum.
@@ -22,9 +24,13 @@ public class MaxValidator<T extends Number> extends AbstractValidator<T> {
 
     protected long max;
 
+    protected String defaultMessage = messages.getMainMessage("validation.constraints.max");
+
+    /**
+     * @param max max value
+     */
     public MaxValidator(long max) {
         this.max = max;
-        this.defaultMessage = messages.getMainMessage("validation.constraints.max");
     }
 
     /**
@@ -52,10 +58,28 @@ public class MaxValidator<T extends Number> extends AbstractValidator<T> {
     }
 
     /**
+     * @param element     'max' element
+     * @param messagePack message pack
+     */
+    public MaxValidator(Element element, String messagePack) {
+        this.messagePack = messagePack;
+        this.message = loadMessage(element);
+
+        String value = element.attributeValue("value");
+        Preconditions.checkNotNullArgument(value);
+        this.max = Long.parseLong(value);
+    }
+
+    /**
      * @return max value
      */
     public long getMax() {
         return max;
+    }
+
+    @Override
+    public String getDefaultMessage() {
+        return defaultMessage;
     }
 
     @Override
@@ -65,7 +89,7 @@ public class MaxValidator<T extends Number> extends AbstractValidator<T> {
             return;
         }
 
-        NumberConstraint constraint = getNumberConstraint(value);
+        NumberValidator constraint = getNumberConstraint(value);
         if (constraint == null
                 || value instanceof Double
                 || value instanceof Float) {
