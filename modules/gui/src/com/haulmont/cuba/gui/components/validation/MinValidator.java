@@ -7,9 +7,13 @@ package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.validation.numbers.NumberValidator;
 import org.dom4j.Element;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import static com.haulmont.cuba.gui.components.validation.ValidatorHelper.getNumberConstraint;
 
@@ -17,15 +21,31 @@ import static com.haulmont.cuba.gui.components.validation.ValidatorHelper.getNum
  * Min validator checks that value must be greater or equal to the specified minimum.
  * <p>
  * For error message it uses Groovy string and it is possible to use '$value' and '$min' keys for formatted output.
+ * <p>
+ * In order to provide your own implementation globally, create a subclass and register it in {@code web-spring.xml},
+ * for example:
+ * <pre>
+ *    &lt;bean id="MinValidator" class="com.haulmont.cuba.gui.components.validation.MinValidator" scope="prototype"/&gt;
+ *    </pre>
+ * Use {@code create()} static methods instead of constructors when creating the action programmatically.
  *
  * @param <T> BigDecimal, BigInteger, Long, Integer
  */
+@Component(MinValidator.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class MinValidator<T extends Number> extends AbstractValidator<T> {
+
+    public static final String NAME = "cuba_MinValidator";
 
     protected long min;
 
     protected String defaultMessage = messages.getMainMessage("validation.constraints.min");
 
+    /**
+     * Constructor with default error message.
+     *
+     * @param min min value
+     */
     public MinValidator(long min) {
         this.min = min;
     }
@@ -54,6 +74,42 @@ public class MinValidator<T extends Number> extends AbstractValidator<T> {
         String min = element.attributeValue("value");
         Preconditions.checkNotNullArgument(min);
         this.min = Long.parseLong(min);
+    }
+
+    /**
+     * Creates validator with default error message.
+     *
+     * @param min min value
+     * @param <T> BigDecimal, BigInteger, Long, Integer
+     * @return validator
+     */
+    public static <T extends Number> MinValidator<T> create(long min) {
+        return AppBeans.getPrototype(NAME, min);
+    }
+
+    /**
+     * Creates validator with custom error message. This message can contain '$value' and '$min' keys for formatted
+     * output.
+     * <p>
+     * Example: "Value '$value' should be greater than or equal to '$min'".
+     *
+     * @param min     min value
+     * @param message error message
+     * @param <T>     BigDecimal, BigInteger, Long, Integer
+     * @return validator
+     */
+    public static <T extends Number> MinValidator<T> create(long min, String message) {
+        return AppBeans.getPrototype(NAME, min, message);
+    }
+
+    /**
+     * @param element     'min' element
+     * @param messagePack message pack
+     * @param <T>         BigDecimal, BigInteger, Long, Integer
+     * @return validator
+     */
+    public static <T extends Number> MinValidator<T> create(Element element, String messagePack) {
+        return AppBeans.getPrototype(NAME, element, messagePack);
     }
 
     /**

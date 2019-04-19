@@ -36,25 +36,25 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
     protected static final Map<String, BiFunction<Element, String, AbstractValidator>> validatorsMap;
 
     static {
-        validatorsMap = new HashMap<>(17);
-        validatorsMap.put("notNull", NotNullValidator::new);
-        validatorsMap.put("notEmpty", NotEmptyValidator::new);
-        validatorsMap.put("notBlank", NotBlankValidator::new);
-        validatorsMap.put("regexp", RegexpValidator::new);
-        validatorsMap.put("size", SizeValidator::new);
-        validatorsMap.put("negativeOrZero", NegativeOrZeroValidator::new);
-        validatorsMap.put("negative", NegativeValidator::new);
-        validatorsMap.put("positiveOrZero", PositiveOrZeroValidator::new);
-        validatorsMap.put("positive", PositiveValidator::new);
-        validatorsMap.put("max", MaxValidator::new);
-        validatorsMap.put("min", MinValidator::new);
-        validatorsMap.put("decimalMin", DecimalMinValidator::new);
-        validatorsMap.put("decimalMax", DecimalMaxValidator::new);
-        validatorsMap.put("digits", DigitsValidator::new);
-        validatorsMap.put("past", PastValidator::new);
-        validatorsMap.put("pastOrPresent", PastOrPresentValidator::new);
-        validatorsMap.put("future", FutureValidator::new);
-        validatorsMap.put("futureOrPresent", FutureOrPresentValidator::new);
+        validatorsMap = new HashMap<>(18);
+        validatorsMap.put("decimalMin", DecimalMinValidator::create);
+        validatorsMap.put("decimalMax", DecimalMaxValidator::create);
+        validatorsMap.put("digits", DigitsValidator::create);
+        validatorsMap.put("futureOrPresent", FutureOrPresentValidator::create);
+        validatorsMap.put("future", FutureValidator::create);
+        validatorsMap.put("max", MaxValidator::create);
+        validatorsMap.put("min", MinValidator::create);
+        validatorsMap.put("negativeOrZero", NegativeOrZeroValidator::create);
+        validatorsMap.put("negative", NegativeValidator::create);
+        validatorsMap.put("notBlank", NotBlankValidator::create);
+        validatorsMap.put("notEmpty", NotEmptyValidator::create);
+        validatorsMap.put("notNull", NotNullValidator::create);
+        validatorsMap.put("pastOrPresent", PastOrPresentValidator::create);
+        validatorsMap.put("past", PastValidator::create);
+        validatorsMap.put("positiveOrZero", PositiveOrZeroValidator::create);
+        validatorsMap.put("positive", PositiveValidator::create);
+        validatorsMap.put("regexp", RegexpValidator::create);
+        validatorsMap.put("size", SizeValidator::create);
     }
 
     @Override
@@ -79,7 +79,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
         loadContextHelp(resultComponent, element);
 
         loadValidators(resultComponent, element);
-        loadConstraintValidators(resultComponent, element);
+        loadValidation(resultComponent, element);
 
         loadRequired(resultComponent, element);
 
@@ -124,7 +124,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
     }
 
     @SuppressWarnings("unchecked")
-    protected void loadConstraintValidators(Field component, Element element) {
+    protected void loadValidation(Field component, Element element) {
         Element validatorsHolder = element.element("validators");
         if (validatorsHolder != null) {
             List<Element> validators = validatorsHolder.elements();

@@ -5,10 +5,14 @@
 
 package com.haulmont.cuba.gui.components.validation;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.validation.time.TimeValidator;
 import org.dom4j.Element;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.time.*;
 import java.util.Date;
@@ -17,11 +21,22 @@ import java.util.Date;
  * Validates that date or time in the future or present.
  * <p>
  * Note, types that support TimeZones can be found in {@link DateTimeTransformations#isDateTypeSupportsTimeZones(Class)}.
+ * <p>
+ * In order to provide your own implementation globally, create a subclass and register it in {@code web-spring.xml},
+ * for example:
+ * <pre>
+ *    &lt;bean id="cuba_FutureOrPresentValidator" class="com.haulmont.cuba.gui.components.validation.FutureOrPresentValidator" scope="prototype"/&gt;
+ *    </pre>
+ * Use {@code create()} static methods instead of constructors when creating the action programmatically.
  *
  * @param <T> {@link Date}, {@link LocalDate}, {@link LocalDateTime}, {@link LocalTime}, {@link OffsetDateTime},
  *            {@link OffsetTime}
  */
+@Component(FutureOrPresentValidator.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class FutureOrPresentValidator<T> extends AbstractValidator<T> {
+
+    public static final String NAME = "cuba_FutureOrPresentValidator";
 
     protected boolean checkSeconds = false;
 
@@ -51,6 +66,40 @@ public class FutureOrPresentValidator<T> extends AbstractValidator<T> {
         if (checkSeconds != null) {
             this.checkSeconds = Boolean.parseBoolean(checkSeconds);
         }
+    }
+
+    /**
+     * Creates validator with default error message.
+     *
+     * @param <T> {@link Date}, {@link LocalDate}, {@link LocalDateTime}, {@link LocalTime}, {@link OffsetDateTime},
+     *            {@link OffsetTime}
+     * @return validator
+     */
+    public static <T> FutureOrPresentValidator<T> create() {
+        return AppBeans.getPrototype(NAME);
+    }
+
+    /**
+     * Constructor for custom error message.
+     *
+     * @param message error message
+     * @param <T>     {@link Date}, {@link LocalDate}, {@link LocalDateTime}, {@link LocalTime}, {@link OffsetDateTime},
+     *                {@link OffsetTime}
+     * @return validator
+     */
+    public static <T> FutureOrPresentValidator<T> create(String message) {
+        return AppBeans.getPrototype(NAME, message);
+    }
+
+    /**
+     * @param element     'futureOrPresent' element
+     * @param messagePack message pack
+     * @param <T>         {@link Date}, {@link LocalDate}, {@link LocalDateTime}, {@link LocalTime}, {@link OffsetDateTime},
+     *                    {@link OffsetTime}
+     * @return validator
+     */
+    public static <T> FutureOrPresentValidator<T> create(Element element, String messagePack) {
+        return AppBeans.getPrototype(NAME, element, messagePack);
     }
 
     /**

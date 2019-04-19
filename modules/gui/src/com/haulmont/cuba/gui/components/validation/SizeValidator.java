@@ -6,8 +6,12 @@
 package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.ValidationException;
 import org.dom4j.Element;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 
@@ -17,10 +21,21 @@ import java.util.Collection;
  * For error message it uses Groovy string and it is possible to use following keys for formatted output: 'value', 'min' and 'max'.
  * <p>
  * Note, that size validator for Collection doesn't use key 'value' for output error message.
+ * <p>
+ * In order to provide your own implementation globally, create a subclass and register it in {@code web-spring.xml},
+ * for example:
+ * <pre>
+ *     &lt;bean id="cuba_SizeValidator" class="com.haulmont.cuba.gui.components.validation.SizeValidator" scope="prototype"/&gt;
+ *     </pre>
+ * Use {@code create()} static methods instead of constructors when creating the action programmatically.
  *
  * @param <T> Collection or String
  */
+@Component(SizeValidator.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class SizeValidator<T> extends AbstractValidator<T> {
+
+    public static final String NAME = "cuba_SizeValidator";
 
     protected int min;
     protected int max = Integer.MAX_VALUE;
@@ -60,6 +75,42 @@ public class SizeValidator<T> extends AbstractValidator<T> {
         if (max != null) {
             this.max = Integer.parseInt(max);
         }
+    }
+
+    /**
+     * Creates validator with default message.
+     *
+     * @param <T> Collection or String
+     * @return validator
+     */
+    public static <T> SizeValidator<T> create() {
+        return AppBeans.getPrototype(NAME);
+    }
+
+    /**
+     * Creates validator with custom error message. This message can contain following keys formatted output:
+     * '$value', '$min', and '$max'.
+     * <p>
+     * Example: "The '$value' length must be between $min and $max".
+     * <p>
+     * Note, that message for Collection doesn't use '$value' key for output error message.
+     *
+     * @param message error message
+     * @param <T>     Collection or String
+     * @return validator
+     */
+    public static <T> SizeValidator<T> create(String message) {
+        return AppBeans.getPrototype(NAME, message);
+    }
+
+    /**
+     * @param element     size element
+     * @param messagePack message pack
+     * @param <T>         Collection or String
+     * @return validator
+     */
+    public static <T> SizeValidator<T> create(Element element, String messagePack) {
+        return AppBeans.getPrototype(NAME, element, messagePack);
     }
 
     /**

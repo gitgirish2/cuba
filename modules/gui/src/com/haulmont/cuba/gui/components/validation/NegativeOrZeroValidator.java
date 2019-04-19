@@ -6,9 +6,13 @@
 package com.haulmont.cuba.gui.components.validation;
 
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.validation.numbers.NumberValidator;
 import org.dom4j.Element;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import static com.haulmont.cuba.gui.components.validation.ValidatorHelper.getNumberConstraint;
 
@@ -16,10 +20,21 @@ import static com.haulmont.cuba.gui.components.validation.ValidatorHelper.getNum
  * NegativeOrZero validator checks that value should be a less than or equal 0.
  * <p>
  * For error message it uses Groovy string and it is possible to use '$value' key for formatted output.
+ * <p>
+ * In order to provide your own implementation globally, create a subclass and register it in {@code web-spring.xml},
+ * for example:
+ * <pre>
+ *    &lt;bean id="cuba_NegativeOrZeroValidator" class="com.haulmont.cuba.gui.components.validation.NegativeOrZeroValidator" scope="prototype"/&gt;
+ *    </pre>
+ * Use {@code create()} static methods instead of constructors when creating the action programmatically.
  *
  * @param <T> BigDecimal, BigInteger, Long, Integer, Double, Float
  */
+@Component(NegativeOrZeroValidator.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class NegativeOrZeroValidator<T extends Number> extends AbstractValidator<T> {
+
+    public static final String NAME = "cuba_NegativeOrZeroValidator";
 
     protected String defaultMessage = messages.getMainMessage("validation.constraints.negativeOrZero");
 
@@ -44,6 +59,39 @@ public class NegativeOrZeroValidator<T extends Number> extends AbstractValidator
     public NegativeOrZeroValidator(Element element, String messagePack) {
         this.messagePack = messagePack;
         this.message = loadMessage(element);
+    }
+
+    /**
+     * Creates validator with default message.
+     *
+     * @param <T> BigDecimal, BigInteger, Long, Integer, Double, Float
+     * @return validator
+     */
+    public static <T extends Number> NegativeOrZeroValidator<T> create() {
+        return AppBeans.getPrototype(NAME);
+    }
+
+    /**
+     * Creates validator with custom error message. This message can contain '$value' key for formatted output.
+     * <p>
+     * Example: "Value '$value' should be less than or equal to 0".
+     *
+     * @param message error message
+     * @param <T>     BigDecimal, BigInteger, Long, Integer, Double, Float
+     * @return validator
+     */
+    public static <T extends Number> NegativeOrZeroValidator<T> create(String message) {
+        return AppBeans.getPrototype(NAME, message);
+    }
+
+    /**
+     * @param element     negativeOrZero element
+     * @param messagePack message pack
+     * @param <T>         BigDecimal, BigInteger, Long, Integer, Double, Float
+     * @return validator
+     */
+    public static <T extends Number> NegativeOrZeroValidator<T> create(Element element, String messagePack) {
+        return AppBeans.getPrototype(NAME, element, messagePack);
     }
 
     @Override

@@ -14,6 +14,9 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.validation.numbers.NumberValidator;
 import org.dom4j.Element;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -26,10 +29,21 @@ import static com.haulmont.cuba.gui.components.validation.ValidatorHelper.getNum
  * <p>
  * For error message it uses Groovy string and it is possible to use '$value', '$integer' and '$fraction' keys for
  * formatted output.
+ * <p>
+ * In order to provide your own implementation globally, create a subclass and register it in {@code web-spring.xml},
+ * for example:
+ * <pre>
+ *    &lt;bean id="cuba_DigitsValidator" class="com.haulmont.cuba.gui.components.validation.DigitsValidator" scope="prototype"/&gt;
+ *    </pre>
+ * Use {@code create()} static methods instead of constructors when creating the action programmatically.
  *
  * @param <T> BigDecimal, BigInteger, Long, Integer and String that represents BigDecimal value with current locale
  */
+@Component(DigitsValidator.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class DigitsValidator<T> extends AbstractValidator<T> {
+
+    public static final String NAME = "cuba_DigitsValidator";
 
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
@@ -81,6 +95,45 @@ public class DigitsValidator<T> extends AbstractValidator<T> {
         String fraction = element.attributeValue("fraction");
         Preconditions.checkNotNullArgument(fraction);
         this.fraction = Integer.parseInt(fraction);
+    }
+
+    /**
+     * Creates validator with default error message.
+     *
+     * @param integer  maximum number of integral digits
+     * @param fraction maximum number of fractional digits
+     * @param <T>      BigDecimal, BigInteger, Long, Integer and String that represents BigDecimal value with current locale
+     * @return validator
+     */
+    public static <T> DigitsValidator<T> create(int integer, int fraction) {
+        return AppBeans.getPrototype(NAME, integer, fraction);
+    }
+
+    /**
+     * Creates validator with custom error message. This message can contain '$value', '$integer' and '$fraction' keys for
+     * formatted output.
+     * <p>
+     * Example: "Value '$value' is out of bounds ($integer digits is expected in integer part and $fraction in
+     * fractional part)".
+     *
+     * @param integer  maximum number of integral digits
+     * @param fraction maximum number of fractional digits
+     * @param message  error message
+     * @param <T>      BigDecimal, BigInteger, Long, Integer and String that represents BigDecimal value with current locale
+     * @return validator
+     */
+    public static <T> DigitsValidator<T> create(int integer, int fraction, String message) {
+        return AppBeans.getPrototype(NAME, integer, fraction, message);
+    }
+
+    /**
+     * @param element     'digits' element
+     * @param messagePack message pack
+     * @param <T>         BigDecimal, BigInteger, Long, Integer and String that represents BigDecimal value with current locale
+     * @return validator
+     */
+    public static <T> DigitsValidator<T> create(Element element, String messagePack) {
+        return AppBeans.getPrototype(NAME, element, messagePack);
     }
 
     /**

@@ -14,6 +14,9 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.validation.numbers.NumberValidator;
 import org.dom4j.Element;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -25,10 +28,21 @@ import static com.haulmont.cuba.gui.components.validation.ValidatorHelper.getNum
  * DecimalMax validator checks that value must be less than or equal to the specified maximum.
  * <p>
  * For error message it uses Groovy string and it is possible to use '$value' and '$max' keys for formatted output.
+ * <p>
+ * In order to provide your own implementation globally, create a subclass and register it in {@code web-spring.xml},
+ * for example:
+ * <pre>
+ *   &lt;bean id="cuba_DecimalMaxValidator" class="com.haulmont.cuba.gui.components.validation.DecimalMaxValidator" scope="prototype"/&gt;
+ *   </pre>
+ * Use {@code create()} static methods instead of constructors when creating the action programmatically.
  *
  * @param <T> BigDecimal, BigInteger, Long, Integer and String that represents BigDecimal value with current locale
  */
+@Component(DecimalMaxValidator.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class DecimalMaxValidator<T> extends AbstractValidator<T> {
+
+    public static final String NAME = "cuba_DecimalMaxValidator";
 
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
@@ -77,6 +91,41 @@ public class DecimalMaxValidator<T> extends AbstractValidator<T> {
         }
 
         setDefaultMessageInclusive(this.inclusive);
+    }
+
+    /**
+     * Creates validator with default error message.
+     *
+     * @param max representation of the max value according to the {@link BigDecimal} string representation.
+     * @param <T> BigDecimal, BigInteger, Long, Integer and String that represents BigDecimal value with current locale
+     * @return validator
+     */
+    public static <T> DecimalMaxValidator<T> create(String max) {
+        return AppBeans.getPrototype(NAME, max);
+    }
+
+    /**
+     * Creates validator with custom error message. This message can contain '$value', and '$max' keys for formatted output.
+     * <p>
+     * Example: "Value '$value' should be less than or equal to '$max'".
+     *
+     * @param max     representation of the max value according to the {@link BigDecimal} string representation.
+     * @param message error message
+     * @param <T>     BigDecimal, BigInteger, Long, Integer and String that represents BigDecimal value with current locale
+     * @return validator
+     */
+    public static <T> DecimalMaxValidator<T> create(String max, String message) {
+        return AppBeans.getPrototype(NAME, max, message);
+    }
+
+    /**
+     * @param element     decimalMax element
+     * @param messagePack message pack
+     * @param <T>         BigDecimal, BigInteger, Long, Integer and String that represents BigDecimal value with current locale
+     * @return validator
+     */
+    public static <T> DecimalMaxValidator<T> create(Element element, String messagePack) {
+        return AppBeans.getPrototype(NAME, element, messagePack);
     }
 
     /**
