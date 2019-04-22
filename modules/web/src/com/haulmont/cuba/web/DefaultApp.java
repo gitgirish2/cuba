@@ -29,6 +29,7 @@ import com.haulmont.cuba.web.security.AnonymousUserCredentials;
 import com.haulmont.cuba.web.security.events.AppLoggedInEvent;
 import com.haulmont.cuba.web.security.events.AppLoggedOutEvent;
 import com.haulmont.cuba.web.security.events.AppStartedEvent;
+import com.haulmont.cuba.web.sys.RedirectHandler;
 import com.haulmont.cuba.web.sys.VaadinSessionScope;
 import com.vaadin.server.*;
 import com.vaadin.ui.UI;
@@ -114,6 +115,10 @@ public class DefaultApp extends App {
                 linkHandler.handle();
                 linkHandler = null;
             }
+
+            RedirectHandler redirectHandler = currentUi != null && currentUi.getUrlChangeHandler() != null
+                    ? currentUi.getUrlChangeHandler().getRedirectHandler()
+                    : null;
 
             if (redirectHandler != null && redirectHandler.scheduled()) {
                 redirectHandler.redirect();
@@ -257,7 +262,13 @@ public class DefaultApp extends App {
         if (connection.isAuthenticated()) {
             return webConfig.getMainScreenId();
         } else {
-            return webConfig.getLoginScreenId();
+            String initialScreenId = webConfig.getInitialScreenId();
+
+            if (!userSessionSource.getUserSession().isScreenPermitted(initialScreenId)) {
+                return webConfig.getLoginScreenId();
+            }
+
+            return initialScreenId;
         }
     }
 

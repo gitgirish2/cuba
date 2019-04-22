@@ -639,18 +639,22 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
     }
 
     protected void processRequest(NavigationState navigationState) {
-        if (UrlHandlingMode.URL_ROUTES != webConfig.getUrlHandlingMode() || navigationState == null) {
+        if (UrlHandlingMode.URL_ROUTES != webConfig.getUrlHandlingMode()
+                || navigationState == null) {
             return;
         }
 
-        if (!app.getConnection().isAuthenticated()) {
+        urlChangeHandler.getScreenNavigator()
+                .handleScreenNavigation(navigationState);
+
+        /*if (!app.getConnection().isAuthenticated()) {
             RedirectHandler redirectHandler = beanLocator.getPrototype(RedirectHandler.NAME, this);
             redirectHandler.schedule(navigationState);
             app.redirectHandler = redirectHandler;
         } else {
             urlChangeHandler.getScreenNavigator()
                     .handleScreenNavigation(navigationState);
-        }
+        }*/
     }
 
     @Override

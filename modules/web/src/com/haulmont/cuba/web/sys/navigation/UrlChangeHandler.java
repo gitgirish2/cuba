@@ -35,6 +35,7 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.gui.UrlHandlingMode;
 import com.haulmont.cuba.web.gui.WebWindow;
+import com.haulmont.cuba.web.sys.RedirectHandler;
 import com.haulmont.cuba.web.sys.navigation.accessfilter.NavigationFilter;
 import com.haulmont.cuba.web.sys.navigation.accessfilter.NavigationFilter.AccessCheckResult;
 import com.vaadin.server.Page;
@@ -72,6 +73,8 @@ public class UrlChangeHandler implements InitializingBean {
     protected HistoryNavigator historyNavigator;
     protected ScreenNavigator screenNavigator;
 
+    protected RedirectHandler redirectHandler;
+
     public UrlChangeHandler(AppUI ui) {
         this.ui = ui;
     }
@@ -104,6 +107,14 @@ public class UrlChangeHandler implements InitializingBean {
 
     public ScreenNavigator getScreenNavigator() {
         return screenNavigator;
+    }
+
+    public RedirectHandler getRedirectHandler() {
+        return redirectHandler;
+    }
+
+    public void setRedirectHandler(RedirectHandler redirectHandler) {
+        this.redirectHandler = redirectHandler;
     }
 
     protected void __handleUrlChange(NavigationState requestedState) {

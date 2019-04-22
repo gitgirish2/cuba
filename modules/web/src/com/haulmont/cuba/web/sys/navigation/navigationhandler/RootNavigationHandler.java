@@ -52,9 +52,12 @@ public class RootNavigationHandler extends AbstractNavigationHandler implements 
 
     @Override
     public boolean doHandle(NavigationState requestedState, AppUI ui) {
-        if (isEmptyState(requestedState)
-                || !rootChanged(requestedState, ui)) {
-            return true;
+        if (isEmptyState(requestedState)) {
+            return false;
+        }
+
+        if (!rootChanged(requestedState, ui)) {
+            return fullyHandled(requestedState);
         }
 
         WindowInfo windowInfo = windowConfig.findWindowInfoByRoute(requestedState.getRoot());

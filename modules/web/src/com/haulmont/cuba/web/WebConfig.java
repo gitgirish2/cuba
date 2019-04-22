@@ -520,4 +520,13 @@ public interface WebConfig extends Config {
     @Property("cuba.web.mainScreenId")
     @DefaultString("main")
     String getMainScreenId();
+
+    /**
+     * Defines the screen that will be open for non-authenticated user when an application started.
+     *
+     * @return initial screen id
+     */
+    @Property("cuba.web.initialScreenId")
+    @DefaultString("login")
+    String getInitialScreenId();
 }

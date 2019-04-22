@@ -123,8 +123,6 @@ public abstract class App {
 
     protected LinkHandler linkHandler;
 
-    protected RedirectHandler redirectHandler;
-
     protected BackgroundTaskManager backgroundTaskManager = new BackgroundTaskManager();
 
     protected ThemeConstants themeConstants;
@@ -625,16 +623,5 @@ public abstract class App {
 
         Connection connection = getConnection();
         connection.logout();
-    }
-
-    /**
-     * INTERNAL.
-     *
-     * Sets redirect handler that will be triggered on log in.
-     *
-     * @param redirectHandler redirect handler
-     */
-    public void setRedirectHandler(RedirectHandler redirectHandler) {
-        this.redirectHandler = redirectHandler;
     }
 }
