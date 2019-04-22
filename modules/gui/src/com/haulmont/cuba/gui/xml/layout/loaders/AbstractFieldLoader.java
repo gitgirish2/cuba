@@ -26,9 +26,7 @@ import com.haulmont.cuba.gui.components.validators.EmailValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiFunction;
 
 public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatasourceComponentLoader<T> {
@@ -36,25 +34,26 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
     protected static final Map<String, BiFunction<Element, String, AbstractValidator>> validatorsMap;
 
     static {
-        validatorsMap = new HashMap<>(18);
-        validatorsMap.put("decimalMin", DecimalMinValidator::create);
-        validatorsMap.put("decimalMax", DecimalMaxValidator::create);
-        validatorsMap.put("digits", DigitsValidator::create);
-        validatorsMap.put("futureOrPresent", FutureOrPresentValidator::create);
-        validatorsMap.put("future", FutureValidator::create);
-        validatorsMap.put("max", MaxValidator::create);
-        validatorsMap.put("min", MinValidator::create);
-        validatorsMap.put("negativeOrZero", NegativeOrZeroValidator::create);
-        validatorsMap.put("negative", NegativeValidator::create);
-        validatorsMap.put("notBlank", NotBlankValidator::create);
-        validatorsMap.put("notEmpty", NotEmptyValidator::create);
-        validatorsMap.put("notNull", NotNullValidator::create);
-        validatorsMap.put("pastOrPresent", PastOrPresentValidator::create);
-        validatorsMap.put("past", PastValidator::create);
-        validatorsMap.put("positiveOrZero", PositiveOrZeroValidator::create);
-        validatorsMap.put("positive", PositiveValidator::create);
-        validatorsMap.put("regexp", RegexpValidator::create);
-        validatorsMap.put("size", SizeValidator::create);
+        Map<String, BiFunction<Element, String, AbstractValidator>> validators = new HashMap<>(18);
+        validators.put("decimalMin", DecimalMinValidator::create);
+        validators.put("decimalMax", DecimalMaxValidator::create);
+        validators.put("digits", DigitsValidator::create);
+        validators.put("futureOrPresent", FutureOrPresentValidator::create);
+        validators.put("future", FutureValidator::create);
+        validators.put("max", MaxValidator::create);
+        validators.put("min", MinValidator::create);
+        validators.put("negativeOrZero", NegativeOrZeroValidator::create);
+        validators.put("negative", NegativeValidator::create);
+        validators.put("notBlank", NotBlankValidator::create);
+        validators.put("notEmpty", NotEmptyValidator::create);
+        validators.put("notNull", NotNullValidator::create);
+        validators.put("pastOrPresent", PastOrPresentValidator::create);
+        validators.put("past", PastValidator::create);
+        validators.put("positiveOrZero", PositiveOrZeroValidator::create);
+        validators.put("positive", PositiveValidator::create);
+        validators.put("regexp", RegexpValidator::create);
+        validators.put("size", SizeValidator::create);
+        validatorsMap = Collections.unmodifiableMap(validators);
     }
 
     @Override
