@@ -27,5 +27,7 @@ import java.lang.annotation.*;
 public @interface StudioProperties {
 
     // todo list of virtual XML-only properties of a Component
-    StudioProperty[] properties();
+    StudioProperty[] properties() default {};
+
+    PropertiesRule[] rules() default {};
 }

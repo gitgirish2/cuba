@@ -28,5 +28,7 @@ public @interface StudioEvent {
 
     String caption() default "";
 
+    String description() default "";
+
     String category() default "";
 }

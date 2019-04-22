@@ -16,10 +16,10 @@
 
 package com.haulmont.cuba.gui.meta;
 
-/**
- * JavaDoc
- */
-public enum XmlTarget {
-    ATTRIBUTE,
-    ELEMENT
+public enum ContainerType {
+    VERTICAL,
+    HORIZONTAL,
+    CSS,
+    FLOW,
+    GRID
 }

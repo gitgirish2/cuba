@@ -20,7 +20,14 @@ package com.haulmont.cuba.gui.meta;
  * JavaDoc
  */
 public enum PropertyType {
-    PRIMITIVE,
+    AUTO,
+
+    INTEGER,
+    LONG,
+    DOUBLE,
+    STRING,
+    BOOLEAN,
+    CHARACTER,
 
     COMPONENT_ID,
     ALIGN,
@@ -33,7 +40,6 @@ public enum PropertyType {
     JAVA_CLASS_NAME,
 
     CSS_CLASSNAME_LIST,
-    CSS_CLASSNAME,
     CSS_BLOCK,
 
     BEAN_REF,
@@ -48,7 +54,6 @@ public enum PropertyType {
     DATE_TIME,
     TIME,
 
+    // like columns, fields, etc
     PARTS
-
-    /* todo COMPLEX_TYPE ? */
 }

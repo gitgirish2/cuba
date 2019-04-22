@@ -26,4 +26,9 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 public @interface StudioDelegate {
 
+    String caption() default "";
+
+    String description() default "";
+
+    String category() default "";
 }

@@ -52,12 +52,13 @@ public class SimpleMetaBlueprint {
 
     @StudioComponent(defaultProperty = "value")
     private interface BLabel {
-
     }
 
     @StudioComponent(caption = "TextField", category = "Input")
-    @PropertiesRule(mode = PropertiesMode.ONE_OF, properties = {"container", "datasource"})
-    @PropertiesRule(mode = PropertiesMode.ALL, properties = {"container", "property"})
+    @StudioProperties(rules = {
+            @PropertiesRule(mode = PropertiesMode.ONE_OF, properties = {"container", "datasource"}),
+            @PropertiesRule(mode = PropertiesMode.ALL, properties = {"container", "property"})
+    })
     private interface BTextField {
 
         @StudioProperties(properties = {

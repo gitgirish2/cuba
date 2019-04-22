@@ -16,14 +16,19 @@
 
 package com.haulmont.cuba.gui.meta;
 
-import java.lang.annotation.*;
+import java.util.List;
 
-/**
- * JavaDoc
- */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.SOURCE)
-@Inherited
-public @interface UnsupportedProperties {
-    String[] value();
+@SuppressWarnings("unused")
+public class TableMetaBlueprint {
+
+    @StudioComponent(caption = "Table", icon = "table.svg")
+    interface Table {
+
+        @StudioProperty(id = "columns", type = PropertyType.PARTS)
+        List<Column> getColumns();
+    }
+
+    class Column {
+
+    }
 }

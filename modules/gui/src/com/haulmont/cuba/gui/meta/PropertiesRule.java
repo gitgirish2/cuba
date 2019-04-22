@@ -24,7 +24,6 @@ import java.lang.annotation.*;
 @Inherited
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
-@Repeatable(PropertyRules.class)
 public @interface PropertiesRule {
     PropertiesMode mode();
 

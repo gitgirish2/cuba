@@ -27,15 +27,17 @@ import java.lang.annotation.*;
 public @interface StudioProperty {
     String id() default "";
 
+    PropertyType type() default PropertyType.AUTO;
+
     String caption() default "";
+
+    String description() default "";
 
     String category() default "";
 
     boolean required() default false;
 
     String defaultValue() default "";
-
-    PropertyType type() default PropertyType.PRIMITIVE;
 
     String xmlAttribute() default "";
 

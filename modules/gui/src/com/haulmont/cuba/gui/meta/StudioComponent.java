@@ -28,6 +28,8 @@ import java.lang.annotation.RetentionPolicy;
 public @interface StudioComponent {
     String caption() default "";
 
+    String description() default "";
+
     String category() default "";
 
     String icon() default "";
@@ -37,6 +39,12 @@ public @interface StudioComponent {
     String defaultProperty() default "";
 
     String defaultEvent() default "";
+
+    String[] unsupportedProperties() default {};
+
+    boolean container() default false;
+
+    ContainerType containerType() default ContainerType.VERTICAL;
 
     /**
      * JavaDoc
