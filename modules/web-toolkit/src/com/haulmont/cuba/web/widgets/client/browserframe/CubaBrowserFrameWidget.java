@@ -16,17 +16,38 @@
 
 package com.haulmont.cuba.web.widgets.client.browserframe;
 
+import com.google.gwt.dom.client.Document;
 import com.vaadin.client.ui.VBrowserFrame;
 
 public class CubaBrowserFrameWidget extends VBrowserFrame {
 
-    protected void setAttribute(String name, String value) {
+    protected void setAttribute(String name, String value, String connectorId) {
         if (value == null) {
-            if (this.iframe.hasAttribute(name)) {
-                this.iframe.removeAttribute(name);
+            if (iframe != null && iframe.hasAttribute(name)) {
+                iframe.removeAttribute(name);
             }
         } else {
-            this.iframe.setAttribute(name, value);
+            if ("srcdoc".equals(name) && iframe == null) {
+                createIFrame(connectorId);
+            }
+            iframe.setAttribute(name, value);
         }
+    }
+
+    protected void createIFrame(String connectorId) {
+        if (altElement != null) {
+            getElement().removeChild(altElement);
+            altElement = null;
+        }
+
+        iframe = Document.get().createIFrameElement();
+        iframe.setFrameBorder(0);
+        iframe.setAttribute("width", "100%");
+        iframe.setAttribute("height", "100%");
+        iframe.setAttribute("allowTransparency", "true");
+
+        setName(connectorId);
+
+        getElement().appendChild(iframe);
     }
 }

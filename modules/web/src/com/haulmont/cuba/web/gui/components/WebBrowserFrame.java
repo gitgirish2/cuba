@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.BrowserFrame;
+import com.haulmont.cuba.gui.components.Resource;
 import com.haulmont.cuba.web.widgets.CubaBrowserFrame;
 
 import java.util.EnumSet;
@@ -42,6 +43,22 @@ public class WebBrowserFrame extends WebAbstractResourceView<CubaBrowserFrame> i
     }
 
     @Override
+    public <R extends Resource> R setSource(Class<R> type) {
+        if (getSrcdoc() != null) {
+            setSrcdoc(null);
+        }
+        return super.setSource(type);
+    }
+
+    @Override
+    public void setSource(Resource resource) {
+        if (getSrcdoc() != null) {
+            setSrcdoc(null);
+        }
+        super.setSource(resource);
+    }
+
+    @Override
     public void setSandbox(Sandbox sandbox) {
         component.setSandbox(sandbox.getValue());
     }
@@ -59,6 +76,9 @@ public class WebBrowserFrame extends WebAbstractResourceView<CubaBrowserFrame> i
 
     @Override
     public void setSrcdoc(String value) {
+        if (resource != null) {
+            setSource((Resource) null);
+        }
         component.setSrcdoc(value);
     }
 

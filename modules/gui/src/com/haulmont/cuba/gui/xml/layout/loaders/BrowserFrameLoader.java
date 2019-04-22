@@ -51,6 +51,11 @@ public class BrowserFrameLoader extends AbstractResourceViewLoader<BrowserFrame>
     protected void loadSrcdoc(BrowserFrame resultComponent, Element element) {
         String srcdoc = element.attributeValue("srcdoc");
         if (StringUtils.isNotEmpty(srcdoc)) {
+            if (resultComponent.getSource() != null) {
+                throw new GuiDevelopmentException("Can't set attribute srcdoc in BrowserFrame. " +
+                        "The component already has a resource", context.getFullFrameId());
+            }
+
             resultComponent.setSrcdoc(srcdoc);
         }
     }
@@ -58,6 +63,16 @@ public class BrowserFrameLoader extends AbstractResourceViewLoader<BrowserFrame>
     protected void loadSrcdocFile(BrowserFrame resultComponent, Element element) {
         String srcdocFile = element.attributeValue("srcdocFile");
         if (StringUtils.isNotEmpty(srcdocFile)) {
+            if (resultComponent.getSource() != null) {
+                throw new GuiDevelopmentException("Can't set attribute srcdocFile in BrowserFrame. " +
+                        "The component already has a resource", context.getFullFrameId());
+            }
+
+            if (StringUtils.isNotEmpty(resultComponent.getSrcdoc())) {
+                throw new GuiDevelopmentException("Can't set attribute srcdocFile in BrowserFrame. " +
+                        "The component already has an attribute srcdoc", context.getFullFrameId());
+            }
+
             Resources resources = beanLocator.get(Resources.class);
             String resource = resources.getResourceAsString(srcdocFile);
 

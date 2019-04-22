@@ -38,20 +38,21 @@ public class CubaBrowserFrameConnector extends BrowserFrameConnector {
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
 
+        String connectorId = getConnectorId();
         if (stateChangeEvent.hasPropertyChanged("sandbox")) {
-            getWidget().setAttribute("sandbox", getState().sandbox);
+            getWidget().setAttribute("sandbox", getState().sandbox, connectorId);
         }
 
         if (stateChangeEvent.hasPropertyChanged("srcdoc")) {
-            getWidget().setAttribute("srcdoc", getState().srcdoc);
+            getWidget().setAttribute("srcdoc", getState().srcdoc, connectorId);
         }
 
         if (stateChangeEvent.hasPropertyChanged("allow")) {
-            getWidget().setAttribute("allow", getState().allow);
+            getWidget().setAttribute("allow", getState().allow, connectorId);
         }
 
         if (stateChangeEvent.hasPropertyChanged("referrerpolicy")) {
-            getWidget().setAttribute("referrerpolicy", getState().referrerpolicy);
+            getWidget().setAttribute("referrerpolicy", getState().referrerpolicy, connectorId);
         }
     }
 }
