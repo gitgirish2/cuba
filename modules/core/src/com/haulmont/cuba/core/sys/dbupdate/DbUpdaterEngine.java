@@ -92,7 +92,7 @@ public class DbUpdaterEngine implements DbUpdater {
 
     @Override
     public void updateDatabase() throws DbInitializationException {
-        if (dbInitialized())
+        if (dbInitialized() || changelogTableExists)
             doUpdate();
         else
             doInit();
